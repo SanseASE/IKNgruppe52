@@ -47,7 +47,7 @@ stat = write(socket, &buffer, sizeof(int));
 printf("Reply sent\n");
 printf(" \n");
 
-image = fopen("/root/Desktop/Exercise_7_cpp/kage.jpg", "w");
+image = fopen("/root/Skole/IKNgruppe52/exercise_7/kage.jpg", "w");
 
 if( image == NULL) {
 printf("Error has occurred. Image file could not be opened\n");
