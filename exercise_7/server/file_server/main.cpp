@@ -93,7 +93,7 @@
 
     int main()
     {
-		//Declerations
+		//Declarations
       int socket_desc , new_socket , c;
       struct sockaddr_in server , client;
 
