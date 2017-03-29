@@ -18,16 +18,17 @@ using namespace std;
 int receive_image(int socket, char* file_direc)
 { 
 
-//Decleration
+//Declaration
 int packet_size = 1000;
 int recv_size = 0,size = 0, read_size, write_size, packet_index =1,stat;
 
 char imagearray[packet_size];
 FILE *image;
 
-
+//Write file request to socket
 stat = write(socket, file_direc, 512);
 
+//Verification of file existence
 char verification;
 read(socket, &verification, sizeof(int));
 
@@ -59,6 +60,7 @@ stat = write(socket, &buffer, sizeof(int));
 printf("Reply sent\n");
 printf(" \n");
 
+//Open corresponding file/filepath to store receiving image
 image = fopen(file_direc, "w");
 
 if( image == NULL) {
@@ -74,10 +76,10 @@ fd_set fds;
 int buffer_fd;
 
 while(recv_size < size) {
-//while(packet_index < 2){
 
-    FD_ZERO(&fds);
-    FD_SET(socket,&fds);
+
+    FD_ZERO(&fds); //File descriptor set to zero
+    FD_SET(socket,&fds); //Add File descriptor set
 
     buffer_fd = select(FD_SETSIZE,&fds,NULL,NULL,&timeout);
 
@@ -124,7 +126,7 @@ while(recv_size < size) {
   int main(int argc, char *argv[])
   {
 
-	  //declarations
+	  //Declarations
   int socket_desc;
   struct sockaddr_in server;
 
@@ -139,7 +141,7 @@ while(recv_size < size) {
 
   //Fill with zero(zero - init)
   memset(&server, 0, sizeof(server)); 
-  //
+  //Socket setup
   server.sin_addr.s_addr = inet_addr(argv[1]);
   server.sin_family = AF_INET;
   server.sin_port = htons( 9000 );
@@ -154,6 +156,7 @@ while(recv_size < size) {
 
   puts("Connected\n");
 
+  //Calls function to receive image 
   receive_image(socket_desc, argv[2]);
 
   close(socket_desc);
