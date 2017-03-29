@@ -1,43 +1,51 @@
 //============================================================================
 // Name        : file_server.cpp
-// Author      : Nogen på nettet
+// Author      : Gruppe 52
 // Version     : 1.0
 // Description : file_server in C++, Ansi-style
 //============================================================================
-#include<stdio.h>
+
    #include<string.h>
-   #include<sys/socket.h>
    #include<arpa/inet.h>
    #include<unistd.h>
    #include<iostream>
-   #include<fstream>
-   #include<errno.h>
+
 
    using namespace std;
 
+
+   //Function for sending image from server to client
    int send_image(int socket){
 
+	//Declarations
    FILE *picture;
    int size, read_size, stat, packet_index;
    char send_buffer[1000], read_buffer[256];
    packet_index = 1;
 
+   //Read message from socket (from client)
    read(socket, read_buffer , 255);
 
+   //Print requested file and directory to terminal
    cout << "File directory: " << read_buffer << endl;
 
+   //Open file for future work
    picture = fopen(read_buffer, "r");
 
-
+   //Error handling
    if(picture == NULL) {
        cout << "Error Opening Image File: " << read_buffer << endl;
        write(socket, "0", sizeof(int));
        return 1;
    }
 
+   //Prints service message: Opening file
    cout << "Opening File: " << read_buffer << endl;
+   
+   //Verificationmessage to client (file exists)
    write(socket, "1", sizeof(int));
 
+   //Picture size
    printf("Getting Picture Size\n");
    fseek(picture, 0, SEEK_END);
    size = ftell(picture);
@@ -85,6 +93,7 @@
 
     int main()
     {
+		//Declerations
       int socket_desc , new_socket , c;
       struct sockaddr_in server , client;
 
@@ -132,6 +141,7 @@ puts("Connection accepted");
 
     send_image(new_socket);
 }
+	 //Close socket
     close(socket_desc);
     fflush(stdout);
     return 0;

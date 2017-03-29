@@ -1,26 +1,24 @@
 //============================================================================
 // Name        : file_client.cpp
-// Author      : Nogen på nettet
+// Author      : Gruppe 52
 // Version     : 1.0
 // Description : file_server in C++, Ansi-style
 //============================================================================
-#include<stdio.h>
+
 #include<string.h>
-#include<sys/socket.h>
 #include<arpa/inet.h>
-#include<sys/ioctl.h>
 #include<unistd.h>
 #include<iostream>
-#include<fstream>
-#include<errno.h>
 using namespace std;
 
 //This function is to be used once we have confirmed that an image is to be sent
 //It should read and output an image file
 
+//Fucntion for receiving image
 int receive_image(int socket, char* file_direc)
-{ // Start function
+{ 
 
+//Decleration
 int packet_size = 1000;
 int recv_size = 0,size = 0, read_size, write_size, packet_index =1,stat;
 
@@ -126,6 +124,7 @@ while(recv_size < size) {
   int main(int argc, char *argv[])
   {
 
+	  //declarations
   int socket_desc;
   struct sockaddr_in server;
 
@@ -133,11 +132,14 @@ while(recv_size < size) {
   //Create socket
   socket_desc = socket(AF_INET , SOCK_STREAM , 0);
 
+  //Error handling
   if (socket_desc == -1) {
   printf("Could not create socket");
   }
 
-  memset(&server,0,sizeof(server));
+  //Fill with zero(zero - init)
+  memset(&server, 0, sizeof(server)); 
+  //
   server.sin_addr.s_addr = inet_addr(argv[1]);
   server.sin_family = AF_INET;
   server.sin_port = htons( 9000 );
