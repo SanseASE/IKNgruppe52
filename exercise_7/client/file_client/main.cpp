@@ -81,6 +81,7 @@ while(recv_size < size) {
     FD_ZERO(&fds); //File descriptor set to zero
     FD_SET(socket,&fds); //Add File descriptor set
 
+	// Indicates which of the specified file descriptors is ready for reading, writing, or has an error condition pending
     buffer_fd = select(FD_SETSIZE,&fds,NULL,NULL,&timeout);
 
     if (buffer_fd < 0)
@@ -91,6 +92,7 @@ while(recv_size < size) {
 
     if (buffer_fd > 0)
     {
+		// Reads the size of the recieved packet
         do{
                read_size = read(socket,imagearray, packet_size);
             }while(read_size <0);
@@ -159,6 +161,7 @@ while(recv_size < size) {
   //Calls function to receive image 
   receive_image(socket_desc, argv[2]);
 
+  // closes the socket connection
   close(socket_desc);
 
   return 0;
