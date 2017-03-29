@@ -381,6 +381,8 @@ socket_desc = socket(AF_INET , SOCK_STREAM , 0);
 	\end{lstlisting}
 \end{framed}
 
+Ligesom ved serveren, så oprettes der en socket. Denne bruges til at skabe af forbindelse til serveren. 
+
 \subsection{Connect}
 \begin{framed}
 \begin{lstlisting}[language=C++]
@@ -400,6 +402,10 @@ return 1;
 puts("Connected\n");
 \end{lstlisting}
 \end{framed}
+
+For at forbinde klienten til serveren, skal socket forbindelsen sættes korrekt op. Adressen får det første argument med fra terminalen og portnummeret hardcodes. 
+Derefter bliver der valideret på forbindelsen. Hvis valideringen går skidt, så udskives der en fejlmeddelelse i terminalen og socket forbindelsen lukkes.
+Hvis valideringen foregår efter hensigten, oprettes der forbindelse til serveren og der udskrives en besked i terminalene.
 
 \subsection{Recieve}
 \begin{framed}
@@ -421,6 +427,9 @@ cout << "succes finding the image!" << endl;
 \end{lstlisting}
 \end{framed}
 
+Klienten får et argument med fra terminalen i form af en sti efterfulgt af et filnavn. Dette argument bliver lagt over i en buffer(file_direc), som sendes til serveren ved hjælp af en write(). 
+Herefter modtager klienten en besked fra serveren om at der er blevet valideret på stien og filnavnet, som aflæses ved hjælp af en read(). Hvis valideringen ikke godkendes, udskrives der en fejlmeddelelse.
+
 \begin{framed}
 \begin{lstlisting}[language=C++]
 //Find the size of the image
@@ -430,12 +439,18 @@ stat = read(socket, &size, sizeof(int));
 \end{lstlisting}
 \end{framed}
 
+For at aflæse filens størrelse er der gjort brug af en read().
+
+\newpage
 \begin{framed}
 \begin{lstlisting}[language=C++]
 //Open corresponding file/filepath to store receiving image
 image = fopen(file_direc, "w");
 \end{lstlisting}
 \end{framed}
+
+ funktionen fopen() gør brug af den sti med tilhørende filnavn som blev modtaget tidligere.
+ Der oprettes en fil med samme navn på den førnævnte sti hos klienten. Denne fil har fået write tilladelse, hvilket betyder at det er denne fil som alle modtagende bytes vil blive skrevet til.
 
 \begin{framed}
 \begin{lstlisting}[language=C++]
@@ -487,24 +502,10 @@ fclose(image);
 \end{lstlisting}
 \end{framed}
 
-\begin{framed}
-	\begin{lstlisting}[language=C++]
-	
-	\end{lstlisting}
-\end{framed}
+Denne while() loop står for selve fil modtagelsen fra serveren. Først sættes blob blob..
 
-\begin{framed}
-	\begin{lstlisting}[language=C++]
-	
-	\end{lstlisting}
-\end{framed}
-
-\begin{framed}
-	\begin{lstlisting}[language=C++]
-	
-	\end{lstlisting}
-\end{framed}
-
+Der bliver brugt en read() til at læse de første 1000 bytes fra serveren over i en buffer. Derefter skrives denne buffer ned i en den fil som blev oprettet af fopen(). Hvis den skrevene værdi er forskellig fra den læste, sende der en fejlmeddelelse i terminalen. Dette vil blive gentaget indtil at antallet af modtaget bytes er mindre end fil størrelsen.
+Til at holde med hvor mange gange der er skrevet til klienten, da tælles en packet_index variable 1 op for hvert loop.
 
 \subsection{Close}
 \begin{framed}
@@ -514,7 +515,11 @@ close(socket_desc);
 \end{lstlisting}
 \end{framed}
 
+Til sidst lukkes socket forbindelsen fra klienten ved hjælp af close(socket_desc).
+
 \newpage
+
+\chapter{Resultater}
 
 På figur~\ref{fig:dele_i_system} ses en illustration af de forskellige dele systemet består af. Der er vist, at brugeren kigger på GUI’et, imens kameraet skanner brugerens øje. PC’en kommunikere trådløst med bilen, der har påmonteret et kamera.
 
