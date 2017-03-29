@@ -253,10 +253,10 @@ Her oprettes en socket. Det er denne socket, der bliver brugt og muliggøre forb
 if( bind(socket_desc,(struct sockaddr *)&server,
 	sizeof(server)) < 0)
 {
-puts("bind failed");
-return 1;
+	puts("bind failed");
+	return 1;
 }
-puts("bind done");
+	puts("bind done");
 \end{lstlisting}
 \end{framed}
 Socket bliver bundet til serverens adresse. Dette muliggøre at en klient kan finde forbindelse ved hjælp af serverens ip adresse og portnummer. Der vil blive udskrevet en fejlmeddelelse i terminalen hvis dette ikke lykkes.
@@ -267,7 +267,7 @@ Socket bliver bundet til serverens adresse. Dette muliggøre at en klient kan fi
 //Listen
 listen(socket_desc , 3);
 
-puts("Waiting for incoming connections...");
+	puts("Waiting for incoming connections...");
 \end{lstlisting}
 \end{framed}
 Listen funktionen gør, så serveren står og venter på at en klient vil forsøge at skabe en forbindelse. 
@@ -277,7 +277,7 @@ Listen funktionen gør, så serveren står og venter på at en klient vil forsø
 \begin{lstlisting}[language=C++]
 //Accept an incoming connection
 if((new_socket = accept(socket_desc, (struct sockaddr *)&client,(socklen_t*)&c))){
-puts("Connection accepted");
+	puts("Connection accepted");
 }
 \end{lstlisting}
 \end{framed}
@@ -325,23 +325,23 @@ Størrelsen bliver derefter skrevet til klienten med en write() funktion.
 \begin{lstlisting}[language=C++]
 while(!feof(picture)) {
 //Read from the file into our send buffer
-read_size = fread(send_buffer, 1, sizeof(send_buffer), picture);
+	read_size = fread(send_buffer, 1, sizeof(send_buffer), picture);
 	
 //Send data through our socket
-do{
-stat = write(socket, send_buffer, read_size);
-}while (stat < 0);
+	do{
+	stat = write(socket, send_buffer, read_size);
+	}while (stat < 0);
 	
-printf("Packet Number: %i\n",packet_index);
-printf("Packet Size Sent: %i\n",read_size);
-printf(" \n");
-printf(" \n");
+	printf("Packet Number: %i\n",packet_index);
+	printf("Packet Size Sent: %i\n",read_size);
+	printf(" \n");
+	printf(" \n");
 	
 	
-packet_index++;
+	packet_index++;
 	
 //Zero out our send buffer
-bzero(send_buffer, sizeof(send_buffer));
+	bzero(send_buffer, sizeof(send_buffer));
 }
 \end{lstlisting}
 \end{framed}
@@ -418,8 +418,8 @@ read(socket, &verification, sizeof(int));
 	
 if(verification == '0')
 {
-cout << "error finding the image!" << endl;
-return 0;
+	cout << "error finding the image!" << endl;
+	return 0;
 }
 	
 cout << "succes finding the image!" << endl;
@@ -504,7 +504,7 @@ fclose(image);
 Denne while() loop står for selve fil modtagelsen fra serveren. Select-funktionen indikerer hvilken filedescriptor i dens parameter der er klar. Her er der kun read file descriptor som parameter, hvorfor at select-funktionen på input tjekker om file descriptoren er klar til at blive læst. 
 Der er også en struct timeval som parameter, der specificerer hvor lang tid select-funktionen maksimalt skal vente på, at file descriptoren er klar.
 Der bliver brugt en read() til at læse de første 1000 bytes fra serveren over i en buffer. Derefter skrives denne buffer ned i en den fil som blev oprettet af fopen(). Hvis den skrevene værdi er forskellig fra den læste, sende der en fejlmeddelelse i terminalen. Dette vil blive gentaget så længe at antallet af modtaget bytes er mindre end fil størrelsen.
-Til at holde med hvor mange gange der er skrevet til klienten, da tælles en packet\_index variable 1 op for hvert loop.
+Til at holde øje med hvor mange gange der er skrevet til klienten, da tælles en packet\_index variable 1 op for hvert loop.
 
 \subsection{Close}
 \begin{framed}
