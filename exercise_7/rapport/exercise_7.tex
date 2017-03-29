@@ -232,13 +232,56 @@ For at lave en TCP-server er der gjort brug af denne fremgangsmåde:
 De forskellige steps bliver beskrevet herunder.
 
 \subsection{Socket}
+\begin{lstlisting}[language=C++]
+//Create socket
+socket_desc = socket(AF_INET , SOCK_STREAM , 0);
+if (socket_desc == -1)
+{
+	printf("Could not create socket");
+}
+\end{lstlisting}
 
 \subsection{Bind}
+\begin{lstlisting}[language=C++]
+//Bind
+if( bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0)
+{
+puts("bind failed");
+return 1;
+}
+
+puts("bind done");
+\end{lstlisting}
+
 \subsection{Listen}
+\begin{lstlisting}[language=C++]
+//Listen
+listen(socket_desc , 3);
+
+//Accept and incoming connection
+puts("Waiting for incoming connections...");
+\end{lstlisting}
+
 \subsection{Connect}
+\begin{lstlisting}[language=C++]
+c = sizeof(struct sockaddr_in);
+\end{lstlisting}
+
 \subsection{Accept}
+\begin{lstlisting}[language=C++]
+
+\end{lstlisting}
+
 \subsection{Send}
+\begin{lstlisting}[language=C++]
+
+\end{lstlisting}
+
 \subsection{Close}
+\begin{lstlisting}[language=C++]
+
+\end{lstlisting}
+
 
 
 På figur~\ref{fig:dele_i_system} ses en illustration af de forskellige dele systemet består af. Der er vist, at brugeren kigger på GUI’et, imens kameraet skanner brugerens øje. PC’en kommunikere trådløst med bilen, der har påmonteret et kamera.
