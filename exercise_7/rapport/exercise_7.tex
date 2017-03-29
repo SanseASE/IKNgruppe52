@@ -20,7 +20,6 @@
 \usepackage{wrapfig}
 \usepackage{multirow}
 \usepackage{tabu}
-\usepackage{underscore}
 \usepackage{lastpage}
 \usepackage{fancyhdr}
 \usepackage[compact]{titlesec}
@@ -291,7 +290,7 @@ Når en klient har anmodet om en forbindelse, vil serveren validere på anmodnin
 read(socket, read_buffer , 255);
 \end{lstlisting}
 \end{framed}
- Det første der bliver gjort i send_image() er at aflæse på forbindelsen ved hjælp af en read() funktion. Denne funktion aflæser hvilken sti og fil der bliver anmodet om fra klienten. 
+ Det første der bliver gjort i send\_image() er at aflæse på forbindelsen ved hjælp af en read() funktion. Denne funktion aflæser hvilken sti og fil der bliver anmodet om fra klienten. 
  
 \begin{framed}
 \begin{lstlisting}[language=C++]
@@ -427,7 +426,7 @@ cout << "succes finding the image!" << endl;
 \end{lstlisting}
 \end{framed}
 
-Klienten får et argument med fra terminalen i form af en sti efterfulgt af et filnavn. Dette argument bliver lagt over i en buffer(file_direc), som sendes til serveren ved hjælp af en write(). 
+Klienten får et argument med fra terminalen i form af en sti efterfulgt af et filnavn. Dette argument bliver lagt over i en buffer(file\_direc), som sendes til serveren ved hjælp af en write(). 
 Herefter modtager klienten en besked fra serveren om at der er blevet valideret på stien og filnavnet, som aflæses ved hjælp af en read(). Hvis valideringen ikke godkendes, udskrives der en fejlmeddelelse.
 
 \begin{framed}
@@ -505,7 +504,7 @@ fclose(image);
 Denne while() loop står for selve fil modtagelsen fra serveren. Først sættes blob blob..
 
 Der bliver brugt en read() til at læse de første 1000 bytes fra serveren over i en buffer. Derefter skrives denne buffer ned i en den fil som blev oprettet af fopen(). Hvis den skrevene værdi er forskellig fra den læste, sende der en fejlmeddelelse i terminalen. Dette vil blive gentaget indtil at antallet af modtaget bytes er mindre end fil størrelsen.
-Til at holde med hvor mange gange der er skrevet til klienten, da tælles en packet_index variable 1 op for hvert loop.
+Til at holde med hvor mange gange der er skrevet til klienten, da tælles en packet\_index variable 1 op for hvert loop.
 
 \subsection{Close}
 \begin{framed}
@@ -515,7 +514,7 @@ close(socket_desc);
 \end{lstlisting}
 \end{framed}
 
-Til sidst lukkes socket forbindelsen fra klienten ved hjælp af close(socket_desc).
+Til sidst lukkes socket forbindelsen fra klienten ved hjælp af close(socket\_desc).
 
 \newpage
 
@@ -524,7 +523,7 @@ Til sidst lukkes socket forbindelsen fra klienten ved hjælp af close(socket_des
 På figur~\ref{fig:dele_i_system} ses en illustration af de forskellige dele systemet består af. Der er vist, at brugeren kigger på GUI’et, imens kameraet skanner brugerens øje. PC’en kommunikere trådløst med bilen, der har påmonteret et kamera.
 
 \begin{center}
-	\includegraphics[width=0.9 \textwidth]{hej1.png}
+	\includegraphics[width=0.9 \textwidth]{klient_stortestfil.png}
 	\captionof{figure}{Illustration af de forskellige dele systemet består af}
 	\label{fig:dele_i_system}
 \end{center}
