@@ -4,7 +4,6 @@
 // Version     : 1.0
 // Description : file_server in C++, Ansi-style
 //============================================================================
-
 #include<stdio.h>
 #include<string.h>
 #include<sys/socket.h>
@@ -19,13 +18,28 @@ using namespace std;
 //This function is to be used once we have confirmed that an image is to be sent
 //It should read and output an image file
 
-int receive_image(int socket)
+int receive_image(int socket, char* file_direc)
 { // Start function
 
-int buffersize = 0, recv_size = 0,size = 0, read_size, write_size, packet_index =1,stat;
+int packet_size = 1000;
+int recv_size = 0,size = 0, read_size, write_size, packet_index =1,stat;
 
-char imagearray[10241],verify = '1';
+char imagearray[packet_size];
 FILE *image;
+
+
+stat = write(socket, file_direc, 512);
+
+char verification;
+read(socket, &verification, sizeof(int));
+
+if(verification == '0')
+{
+    cout << "error finding the image!" << endl;
+    return 0;
+}
+
+cout << "succes finding the image!" << endl;
 
 //Find the size of the image
 do{
@@ -47,7 +61,7 @@ stat = write(socket, &buffer, sizeof(int));
 printf("Reply sent\n");
 printf(" \n");
 
-image = fopen("/root/Downloads/kage.jpg", "w");
+image = fopen(file_direc, "w");
 
 if( image == NULL) {
 printf("Error has occurred. Image file could not be opened\n");
@@ -56,11 +70,10 @@ return -1; }
 //Loop while we have not received the entire file yet
 
 
-int need_exit = 0;
 struct timeval timeout = {10,0};
 
 fd_set fds;
-int buffer_fd, buffer_out;
+int buffer_fd;
 
 while(recv_size < size) {
 //while(packet_index < 2){
@@ -79,7 +92,7 @@ while(recv_size < size) {
     if (buffer_fd > 0)
     {
         do{
-               read_size = read(socket,imagearray, 10241);
+               read_size = read(socket,imagearray, packet_size);
             }while(read_size <0);
 
             printf("Packet number received: %i\n",packet_index);
@@ -110,12 +123,11 @@ while(recv_size < size) {
   return 1;
   }
 
-  int main(int argc , char *argv[])
+  int main(int argc, char *argv[])
   {
 
   int socket_desc;
   struct sockaddr_in server;
-  char *parray;
 
 
   //Create socket
@@ -126,7 +138,7 @@ while(recv_size < size) {
   }
 
   memset(&server,0,sizeof(server));
-  server.sin_addr.s_addr = inet_addr("10.0.0.1");
+  server.sin_addr.s_addr = inet_addr(argv[1]);
   server.sin_family = AF_INET;
   server.sin_port = htons( 9000 );
 
@@ -140,7 +152,7 @@ while(recv_size < size) {
 
   puts("Connected\n");
 
-  receive_image(socket_desc);
+  receive_image(socket_desc, argv[2]);
 
   close(socket_desc);
 
