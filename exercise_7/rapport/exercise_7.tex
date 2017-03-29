@@ -501,8 +501,8 @@ fclose(image);
 \end{lstlisting}
 \end{framed}
 
-Denne while() loop står for selve fil modtagelsen fra serveren. Først sættes blob blob..
-
+Denne while() loop står for selve fil modtagelsen fra serveren. Select-funktionen indikerer hvilken filedescriptor i dens parameter der er klar. Her er der kun read file descriptor som parameter, hvorfor at select-funktionen på input tjekker om file descriptoren er klar til at blive læst. 
+Der er også en struct timeval som parameter, der specificerer hvor lang tid select-funktionen maksimalt skal vente på, at file descriptoren er klar.
 Der bliver brugt en read() til at læse de første 1000 bytes fra serveren over i en buffer. Derefter skrives denne buffer ned i en den fil som blev oprettet af fopen(). Hvis den skrevene værdi er forskellig fra den læste, sende der en fejlmeddelelse i terminalen. Dette vil blive gentaget så længe at antallet af modtaget bytes er mindre end fil størrelsen.
 Til at holde med hvor mange gange der er skrevet til klienten, da tælles en packet\_index variable 1 op for hvert loop.
 
