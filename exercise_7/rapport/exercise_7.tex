@@ -1,0 +1,256 @@
+%---------------------------------------------------------------------
+%	PAKKER
+%---------------------------------------------------------------------
+
+\documentclass[12pt,fleqn,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[danish]{babel}
+\usepackage[top=2.5cm, left=2cm, right=2cm, bottom=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[bottom]{footmisc}
+\usepackage{framed}
+\usepackage{caption}
+\usepackage{mdframed}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage{array}
+\usepackage{wrapfig}
+\usepackage{multirow}
+\usepackage{tabu}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\usepackage[compact]{titlesec}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{arydshln}
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}
+\renewcommand{\lstlistingname}{Kodeudsnit}
+\tabulinesep=3mm
+
+
+\lstset{language=Matlab,%
+    %basicstyle=\color{red},
+    breaklines=true,%
+    morekeywords={matlab2tikz},
+    keywordstyle=\color{blue},%
+    morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+    identifierstyle=\color{black},%
+    stringstyle=\color{mylilas},
+    commentstyle=\color{mygreen},%
+    showstringspaces=false,%without this there will be a symbol in the places where there is a space
+    emph=[1]{for,end,break},emphstyle=[1]\color{red}, %some words to emphasise
+    %emph=[2]{word1,word2}, emphstyle=[2]{style},    
+}
+
+
+\makeatletter
+\pagestyle{fancy}
+\fancypagestyle{plain}{}
+\fancyfoot{} % clear all fields
+\fancyfoot[RO,RE]{Side \thepage\ af \pageref{LastPage}}
+\fancyhead{} % clear all fields
+\renewcommand{\headrulewidth}{0pt}
+
+\def\thickhrulefill{\leavevmode \leaders \hrule height 1.2ex \hfill \kern \z@}
+\def\@makechapterhead#1{
+  \vspace*{10\p@}%
+  {\parindent \z@ \centering \reset@font
+        \thickhrulefill\quad 
+        \scshape\bfseries\textit{\@chapapp{}  \thechapter}  
+        \quad \thickhrulefill
+        \par\nobreak
+        \vspace*{10\p@}%
+        \interlinepenalty\@M
+        \hrule
+        \vspace*{10\p@}%
+        \Huge \bfseries #1 \par\nobreak
+        \par
+        \vspace*{10\p@}%
+        \hrule
+        \vskip 40\p@
+  }}
+
+
+\titlespacing{\subsection}{20pt}{*2}{*2}
+\titlespacing{\subsubsection}{40pt}{*2}{*2}
+
+\graphicspath{ {Figur/} }
+
+
+%På figur~\ref{fig:fuld_lyd_tid}
+
+
+%\begin{framed}
+%\begin{center}
+%	\includegraphics[width=\textwidth]{fuld_lyd_tid.png}
+%	\captionof{figure}{Trafikstøj set i forhold til tiden} 
+%	\label{fig:fuld_lyd_tid}
+%\end{center}
+%\end{framed}
+
+
+
+%Se Kodeudsnit \ref{lstlisting:generel_kode}
+
+%\captionof{lstlisting}{Generelle egenskaber for koden til fremstilling af diverse figure i matlab} 
+%\label{lstlisting:generel_kode}
+%\vspace{5mm} %5mm vertical space
+%
+%\subsection{Kode til lyd i forhold til tiden}
+%\begin{framed}
+%\begin{center}
+%\begin{lstlisting}
+%figure('name','trafikstoejen i fuld laengde'); clf
+%subplot(211);
+%plot(t,s_sound_left)
+%xlabel('Tid (sek)')
+%ylabel('Signalstyrke')
+%title('Trafikstoej set i forhold til tiden')
+%grid on
+%hold on
+%\end{lstlisting}
+%\end{center}
+%\end{framed}
+
+
+
+
+\begin{document}
+	
+%---------------------------------------------------------------------
+%	FORSIDE
+%---------------------------------------------------------------------
+
+\begingroup
+\thispagestyle{empty}
+\centering
+\vspace*{5cm}
+\par\normalfont\fontsize{35}{35}\sffamily\selectfont
+\textbf{TCP socket fil overførsel}\\
+{\LARGE IKN øvelse 7}\par
+{\LARGE Gruppe 52}\par
+\vspace*{1cm}
+{\small
+\begin{center}
+\begin{tabu} to 1 \textwidth { X[l,1]  X[c,1] X[c,1] }
+	Ragnar-Gwyn Dixen & 201400301 & au516263\\
+	Thomas Sanberg Jensen & 201401914 & au513522\\
+	Benjamin Kirkeby & 201410819 & au529001\\
+	\end{tabu}
+\end{center}}
+\endgroup
+\newpage
+
+
+%---------------------------------------------------------------------
+%	INDHOLD
+%---------------------------------------------------------------------
+\tableofcontents{}
+\newpage
+
+%---------------------------------------------------------------------
+%	INDLEDNING
+%---------------------------------------------------------------------
+\chapter{Indledning}
+
+\section{Opgaveformulering}
+Denne journal skal beskrive udviklingsforløbet, funktionaliteten og resultatet for udviklingen af:
+\begin{enumerate}
+	\item En TCP-server med support for en client ad gangen, som kan modtage
+	en tekststreng fra en client. Serveren skal køre i en virtuel Linux-maskine.
+	Tekststrengen skal indeholde et filnavn, eventuel ledsaget af en stiangivelse.
+	Tilsammen skal informationen i tekststrengen udpege en fil af en vilkårlig
+	type/størrelse i serveren, som en tilsluttet client ønsker at hente fra serveren. Hvis filen ikke findes skal serveren returnere en fejlmelding til client’en. Hvis filen findes skal den overføres fra server til client i segmenter på 1000 bytes ad gangen – indtil filen er overført fuldstændigt. Serverens portnummer skal være 9000. Serverapplikationen skal kunne startes fra en terminal med kommandoen:
+	\begin{lstlisting}[backgroundcolor = \color{lightgray}, language=bash]
+	./file_server
+	\end{lstlisting}
+	Serveren skal være iterativ, dvs. den skal ikke lukke ned når den har sendt en fil til en client. Den skal, efter endt filoverførsel, kunne håndtere en ny forespørgsel fra en client (samme client eller en anden client).
+	Serveren skal kun kunne håndtere en client ad gangen.
+	
+	\item Der skal udvikles en client kørende i en anden virtuel Linux-maskine. Denne client skal kunne hente en fil fra den ovenfor beskrevne server. Client’en sender indledningsvis en tekststreng, som er indtastet af operatøren, til serveren.
+	Tekststrengen skal indeholde et filnavn + en eventuel stiangivelse til en fil i serveren. Client’en skal modtage den ønskede fil fejlfrit fra serveren – eller udskrive en fejlmelding hvis filen ikke findes i serveren. Client-applikationen skal kunne startes fra en terminal med kommandoen:
+	\begin{lstlisting}[backgroundcolor = \color{lightgray}, language=bash]
+	./file_server <file_servers ip-adr.> <[sti] + filnavn>
+	\end{lstlisting}
+	
+	\item Som kvalitetskontrol for client/server systemet skal den overførte fil kunne sammenlignes med den oprindelige fil vha. terminal-kommandoen:
+	\begin{lstlisting}[backgroundcolor = \color{lightgray}, language=bash]
+	diff -s <afsendt fil> <modtaget fil>
+	\end{lstlisting}
+	<afsendt fil> er overført til client vha. af email, ftp eller anden pålidelig, ikke proprietær overføringsmetode.
+	Der må ikke være forskel mellem filerne, hverken mht. til størrelse eller mht. indhold.
+\end{enumerate}
+
+%\section{Ordliste}
+%\begin{center}
+%	\begin{tabu} to 1 \textwidth { X[l,1.2]  X[l,4] }
+%		\tabulinestyle{1pt}
+%		\tabucline[1pt]{}
+%		Ord & Forklaring  \\
+%		\tabucline[2pt]{}
+%		Aktivt valg  & Når brugeren skal foretage et valg med øjnene. Dette svare til et venstreklik med en almindelig mus \\
+%		\tabucline[1pt on2pt]{}
+%		Valgfelt  & Et felt på skærmen hvor brugeren skal foretage et aktivt valg \\
+%		\tabucline[1pt on2pt]{}
+%		Processindikator  & En indikation af hvor langt den operation, der er i gang, er kommet \\
+%		\tabucline[1pt on2pt]{}
+%		Dvaletilstand  & Systemet er lukket ned i en strømbesparende tilstand, men en modtager på robotten er aktiv, så denne vil kunne vågne til aktiv tilstand ved et signal fra PC applikationen \\
+%		\tabucline[1pt on2pt]{}
+%		Operationstilstand  & Når systemet er klar til at blive betjent af brugeren \\
+%		\tabucline[1pt on2pt]{}
+%		Robot  & Den styrbare enhed i systemet \\
+%		\tabucline[1pt on2pt]{}
+%		Udvidelsesmodul  & Et eksternt modul der kan sættes på robotten for at øge funktionaliteten. Dette vil kunne udvikles af tredjepartsudviklere  \\
+%		\tabucline[1pt on2pt]{}
+%		GUI  & En grafisk brugerflade med hvilken brugeren interagerer med systemet \\
+%		\tabucline[1pt]{}	
+%	\end{tabu}
+%\end{center}
+
+
+\newpage
+
+%---------------------------------------------------------------------
+%	SERVER
+%---------------------------------------------------------------------
+\chapter{TCP Server}
+
+
+\section{Fremgangsmåde}
+For at lave en TCP-server er der gjort brug af denne fremgangsmåde:
+\begin{enumerate}
+	\item Socket
+	\item Bind
+	\item Listen
+	\item Connect
+	\item Accept
+	\item Send
+	\item Close
+\end{enumerate}
+De forskellige steps bliver beskrevet herunder.
+
+\subsection{Socket}
+
+\subsection{Bind}
+\subsection{Listen}
+\subsection{Connect}
+\subsection{Accept}
+\subsection{Send}
+\subsection{Close}
+
+
+På figur~\ref{fig:dele_i_system} ses en illustration af de forskellige dele systemet består af. Der er vist, at brugeren kigger på GUI’et, imens kameraet skanner brugerens øje. PC’en kommunikere trådløst med bilen, der har påmonteret et kamera.
+
+\begin{center}
+	\includegraphics[width=0.9 \textwidth]{hej1.png}
+	\captionof{figure}{Illustration af de forskellige dele systemet består af}
+	\label{fig:dele_i_system}
+\end{center}
+
+\newpage
+
+
+
+\end{document}
