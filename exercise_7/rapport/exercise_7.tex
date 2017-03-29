@@ -503,7 +503,7 @@ fclose(image);
 
 Denne while() loop står for selve fil modtagelsen fra serveren. Først sættes blob blob..
 
-Der bliver brugt en read() til at læse de første 1000 bytes fra serveren over i en buffer. Derefter skrives denne buffer ned i en den fil som blev oprettet af fopen(). Hvis den skrevene værdi er forskellig fra den læste, sende der en fejlmeddelelse i terminalen. Dette vil blive gentaget indtil at antallet af modtaget bytes er mindre end fil størrelsen.
+Der bliver brugt en read() til at læse de første 1000 bytes fra serveren over i en buffer. Derefter skrives denne buffer ned i en den fil som blev oprettet af fopen(). Hvis den skrevene værdi er forskellig fra den læste, sende der en fejlmeddelelse i terminalen. Dette vil blive gentaget så længe at antallet af modtaget bytes er mindre end fil størrelsen.
 Til at holde med hvor mange gange der er skrevet til klienten, da tælles en packet\_index variable 1 op for hvert loop.
 
 \subsection{Close}
@@ -520,15 +520,62 @@ Til sidst lukkes socket forbindelsen fra klienten ved hjælp af close(socket\_de
 
 \chapter{Resultater}
 
-På figur~\ref{fig:dele_i_system} ses en illustration af de forskellige dele systemet består af. Der er vist, at brugeren kigger på GUI’et, imens kameraet skanner brugerens øje. PC’en kommunikere trådløst med bilen, der har påmonteret et kamera.
+Til test af server og klient, blev der brugt to viatuelle masiker på samme PC. Serveren blev startet op ved at skrive i terminalen: \begin{lstlisting}[backgroundcolor = \color{lightgray}, language=bash]
+./file_server
+\end{lstlisting}
+
+Til første test blev der brugt en txt fil som var så lille en fil, at dette fremkommer som en størrelse på 0.
 
 \begin{center}
-	\includegraphics[width=0.9 \textwidth]{klient_stortestfil.png}
-	\captionof{figure}{Illustration af de forskellige dele systemet består af}
-	\label{fig:dele_i_system}
+	\includegraphics[width=0.9 \textwidth]{server_testfil.png}
+	\captionof{figure}{Terminal udskrift fra server}
+	\label{fig:server_testfil}
 \end{center}
 
+På figur~\ref{fig:server_testfil} kan det ses at alt forekommer som forventet. 
+Programmet åbnes og der ventes på forbindelse. Forbindelsen accepteres og sti + filnavn bliver udskrevet. 
+Dernæst kan det ses at den totale størrelse på filen bliver fundet til at være 0 som forventet, hvorefter at overførelsen begynder. 
+Til sidst kan det ses at serveren igen begynder at vente på forbindelse, hvilket viser at serveren er iterativ.
 \newpage
+\begin{center}
+	\includegraphics[width=0.9 \textwidth]{klient_testfil.png}
+	\captionof{figure}{Terminal udskrift fra klient}
+	\label{fig:klient_testfil}
+\end{center}
+
+Ligeledes kan det ses fra klientens side på figur ~\ref{fig:klient_testfil} at overførelsen var vellykket. 
+Først startes klienten og der skrives en server ip adresse og en sti + filnavn. 
+Klienten forbinder til serveren og det kan ses at serveren svarer med en fil størrelse. Klienten svarer og overførelsen begynder.
+Til sidst kan det ses at filen er overført og klienten lukker ned.
+
+
+For god ordens skyld blev server og klient også testet med en større fil. 
+\begin{center}
+	\includegraphics[width=0.3 \textwidth]{server_storfil2.png}
+	\captionof{figure}{Terminal udskrift fra server}
+	\label{fig:server_testfil2}
+\end{center}
+
+Som det kan ses af packet number på figur  ~\ref{fig:server_testfil2} bliver sendt betydeligt flere gange, da denne fil er meget større. Derfor er der valgt kun at vise et udsnit af terminal vinduet. Igen kan det ses hvordan koden efter endt overførelse igen står og venter på ny forbindelse.
+
+\begin{center}
+	\includegraphics[width=0.6 \textwidth]{klient_stortestfil2.png}
+	\captionof{figure}{Terminal udskrift fra klient}
+	\label{fig:klient_testfil2}
+\end{center}
+
+Igen på figur ~\ref{fig:klient_testfil2} kan det ses hvordan filen succesfult bliver overført og til sidst lukker forbindelsen til serveren.
+\newpage
+
+Til slut blev den store fil efter endt overførelse sammenlignet med den samme fil, hentet ned ved hjælp af en sikker forbindelse. 
+\begin{center}
+	\includegraphics[width=0.6 \textwidth]{resultat_er_de_ens.png}
+	\captionof{figure}{Terminal udskrift af sammenligning}
+	\label{fig:rel}
+\end{center}
+
+På figur ~\ref{fig:rel} kan det ses, ved sammenligne de to filer, at det er identiske, hvilket vi konkluderer til at være en succes.
+
 
 
 
