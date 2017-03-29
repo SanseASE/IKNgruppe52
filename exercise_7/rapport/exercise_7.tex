@@ -1,3 +1,4 @@
+
 %---------------------------------------------------------------------
 %	PAKKER
 %---------------------------------------------------------------------
@@ -19,6 +20,7 @@
 \usepackage{wrapfig}
 \usepackage{multirow}
 \usepackage{tabu}
+\usepackage{underscore}
 \usepackage{lastpage}
 \usepackage{fancyhdr}
 \usepackage[compact]{titlesec}
@@ -180,7 +182,8 @@ Denne journal skal beskrive udviklingsforløbet, funktionaliteten og resultatet 
 	diff -s <afsendt fil> <modtaget fil>
 	\end{lstlisting}
 	<afsendt fil> er overført til client vha. af email, ftp eller anden pålidelig, ikke proprietær overføringsmetode.
-	Der må ikke være forskel mellem filerne, hverken mht. til størrelse eller mht. indhold.
+	Der må ikke være forskel mellem filerne, hverken mht. til størrelse eller mht. indhold.
+
 \end{enumerate}
 
 %\section{Ordliste}
@@ -241,6 +244,8 @@ if (socket_desc == -1)
 }
 \end{lstlisting}
 
+Her oprettes der en socket. Det er denne socket, som bliver brugt igennem koden og muliggøre forbindelsen mellem serveren og en klient. Hvis forbindelsen ikke lykkes, udskrives der en fejlmeddelelse i terminalen. 
+ 
 \subsection{Bind}
 \begin{lstlisting}[language=C++]
 //Bind
@@ -249,9 +254,10 @@ if( bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0)
 puts("bind failed");
 return 1;
 }
-
 puts("bind done");
 \end{lstlisting}
+
+Socketen bliver bundet til serverens adresse,  sådan at en client kan finde denne socket forbindelse ved hjælp af serverens ip adresse og portnummer. Der vil blive udskrevet en fejlmeddelelse i terminalen hvis dette ikke lykkes.
 
 \subsection{Listen}
 \begin{lstlisting}[language=C++]
@@ -262,21 +268,36 @@ listen(socket_desc , 3);
 puts("Waiting for incoming connections...");
 \end{lstlisting}
 
+Listen funktionen gør, at serveren står og venter på at en client vil forsøge at skabe en forbindelse. 
+
 \subsection{Connect}
 \begin{lstlisting}[language=C++]
 c = sizeof(struct sockaddr_in);
 \end{lstlisting}
-
+ Jeg er ikke helt sikker på dette punkt. Jeg tænker nok nærmere at vi kun skal kommentere på connect fra clientens synspunkt. 
+ 
 \subsection{Accept}
 \begin{lstlisting}[language=C++]
 
 \end{lstlisting}
+
+Når en client har anmodet om en forbindelse, vil serveren validere på anmodningen og lave en accept hvis denne er korrekt. Derefter er der skabt forbindelse til clienten. 
 
 \subsection{Send}
 \begin{lstlisting}[language=C++]
 
 \end{lstlisting}
 
+ Det første vi gør i send_image() er at aflæse på forbindelsen ved hjælp af en read() funktion. Denne funktion fortæller aflæser hvilken sti og fil der bliver anmodet om fra clienten. 
+ Der bliver derefter gjort brug af fopen() funktionen til at åbne stien og give den tilladelse til at aflæse.
+ Hvis denne sti og fil eksisterer, da vil serveren sende en verifikations besked tilbage til clienten.
+ 
+ 
+ For at finde størrelsen på den fil som skal afsendes, er der brugt en fseek funktion. Denne funktion returnerer enten 0 eller en værdi som bliver returnerede ved hjælp af ftell() funktionen. 
+ Størrelsen bliver derefter skrevet til clienten med en write() funktion
+ 
+ 
+ 
 \subsection{Close}
 \begin{lstlisting}[language=C++]
 
