@@ -2,7 +2,7 @@
 // Name        : file_server.cpp
 // Author      : Gruppe 52
 // Version     : 1.0
-// Description : file_server in C++, Ansi-style
+// Description : file_server in C++
 //============================================================================
 
    #include<string.h>
@@ -68,7 +68,6 @@
    cout << "Socket data: " << read_buffer << endl;
 
    while(!feof(picture)) {
-   //while(packet_index = 1){
       //Read from the file into our send buffer
       read_size = fread(send_buffer, 1, sizeof(send_buffer), picture);
 
@@ -122,11 +121,10 @@
      {
      //Listen
      listen(socket_desc , 3);
-
-      //Accept and incoming connection
+	 
       puts("Waiting for incoming connections...");
       c = sizeof(struct sockaddr_in);
-
+	//Accept an incoming connection
      if((new_socket = accept(socket_desc, (struct sockaddr *)&client,(socklen_t*)&c))){
 puts("Connection accepted");
          }
@@ -141,7 +139,7 @@ puts("Connection accepted");
 
     send_image(new_socket);
 }
-	 //Close socket
+	//Close socket
     close(socket_desc);
     fflush(stdout);
     return 0;

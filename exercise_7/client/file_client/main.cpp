@@ -2,7 +2,7 @@
 // Name        : file_client.cpp
 // Author      : Gruppe 52
 // Version     : 1.0
-// Description : file_server in C++, Ansi-style
+// Description : file_client in C++
 //============================================================================
 
 #include<string.h>
