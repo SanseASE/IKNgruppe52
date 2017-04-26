@@ -74,7 +74,44 @@ Link::~Link()
  */
 void Link::send(const char buf[], short size)
 {
-	//TO DO Your own code 
+    char sendbuf[(size*2)+2] = {0};
+    int count = 1;
+    sendbuf[0] = 'A';
+    for (int i =  0; i < size; i++)
+    {
+
+        if (buf[i] == 'A')
+        {
+            sendbuf[count] = 'B';
+            sendbuf[count++] = 'C';
+            count++;
+        }
+        if (buf[i] == 'B')
+        {
+            sendbuf[count] = 'B';
+            sendbuf[count++] = 'D';
+            count++;
+        }
+        else
+        {
+            sendbuf[count] = buf[i];
+            count++;
+        }
+
+    }
+    sendbuf[count]='A';
+
+
+
+
+    unsigned char final_sendbuf[count];
+    for(int i = 0; i < count; i++)
+    {
+        final_sendbuf[i] = sendbuf[i];
+    }
+
+    const unsigned char *send = final_sendbuf;
+    v24Write(serialPort, send, count);
 }
 
 /**
@@ -88,7 +125,30 @@ void Link::send(const char buf[], short size)
  */
 short Link::receive(char buf[], short size)
 {
-	//TO DO Your own code
+    unsigned char receive_buf[size-2];
+    int count = 0;
+    for (int i =  1; i < size-1; i++)
+    {
+
+        if (buf[i] == 'B' & buf[i+1] == 'C')
+        {
+            receive_buf[count] = 'A';
+            count++;
+        }
+        if (buf[i] == 'B' & buf[i+1] == 'D')
+        {
+            receive_buf[count] = 'B';
+            count++;
+        }
+        else
+        {
+            receive_buf[count] = buf[i];
+            count++;
+        }
+    }
+
+    unsigned char* recv_buf = receive_buf;
+    v24Read(serialPort, recv_buf, count);
 }
 
 } /* namespace Link */
