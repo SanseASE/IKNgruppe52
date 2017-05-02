@@ -3,6 +3,7 @@
 #include <cstdio>
 #include "../include/Transport.h"
 #include "../include/TransConst.h"
+#include "../include/Checksum.h"
 
 #define DEFAULT_SEQNO 2
 
@@ -86,24 +87,22 @@ namespace Transport
 	/// </param>
 	void Transport::send(const char buf[], short size)
 	{
-
+      do
+        {
+        buffer[SEQNO] = seqNo;
         buffer[TYPE] = DATA;
         memcpy(buffer+ACKSIZE, buf, size);
 
-        calcChecksum(buffer+CHKSUMSIZE, (size+ACKSIZE)-CHKSUMSIZE);
+        checksum->calcChecksum(buffer+CHKSUMSIZE, (size+ACKSIZE)-CHKSUMSIZE);
 
-
+        /*
+     Her skal der laves fejl kode til implemtering af støj til test
+        */
         link->send(buffer, size);
+        } while(receiveAck() == false);
 
+        old_seqNo = DEFAULT_SEQNO;
 
- /*     Send pakke D0;
-
-        vent på A0 (acknowledge);
-
-        når A0 er modtaget, begynd send pakke D1;
-
-        vent på A1(acknowledge);
- */
 	}
 
 	/// <summary>
@@ -113,18 +112,29 @@ namespace Transport
 	/// Buffer.
 	/// </param>
 	short Transport::receive(char buf[], short size)
-	{
-        vent på pakke D0;
+    {
+        do
+        {
+        memcpy(buffer, buf, size);
 
-        hvis pakek D0 er modtaget, send A0(acknowledge);
-            send ok pakke til applikations lag;
+        checksum->calcChecksum(buffer+CHKSUMSIZE, size-CHKSUMSIZE);
+        checksum->checkChecksum(buffer+CHKSUMSIZE, size-CHKSUMSIZE);
 
-        vent på pakke D1
+        return link->receive(buffer, size);
+        } while(checksum == false || seqNo == old_seqNo);
 
-        hvis pakek D1 er modtaget, send A1(acknowledge);
-            send ok pakke til applikations lag;
+        old_seqNo = seqNo;
 
-        return link->receive(buf, size);
+ /*     modtage fra linklaget
+        se på vores header
+        calc checksum for alt der ikke er checksum
+        sammenligne checksum (brug checkchecksum)
+        send ack tilbage
+        modtage ok pakke
+        modtage seq som er forskellig fra tidligere
+            (loope indtil disse kriterier er opfyldt)
+ */
+
 	}
 }
 
