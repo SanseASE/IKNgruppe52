@@ -86,8 +86,24 @@ namespace Transport
 	/// </param>
 	void Transport::send(const char buf[], short size)
 	{
-		// TO DO Your own code
-        link->send(buf, size);
+
+        buffer[TYPE] = DATA;
+        memcpy(buffer+ACKSIZE, buf, size);
+
+        calcChecksum(buffer+CHKSUMSIZE, (size+ACKSIZE)-CHKSUMSIZE);
+
+
+        link->send(buffer, size);
+
+
+ /*     Send pakke D0;
+
+        vent på A0 (acknowledge);
+
+        når A0 er modtaget, begynd send pakke D1;
+
+        vent på A1(acknowledge);
+ */
 	}
 
 	/// <summary>
@@ -98,9 +114,17 @@ namespace Transport
 	/// </param>
 	short Transport::receive(char buf[], short size)
 	{
-		// TO DO Your own code
+        vent på pakke D0;
+
+        hvis pakek D0 er modtaget, send A0(acknowledge);
+            send ok pakke til applikations lag;
+
+        vent på pakke D1
+
+        hvis pakek D1 er modtaget, send A1(acknowledge);
+            send ok pakke til applikations lag;
+
         return link->receive(buf, size);
 	}
 }
-
 
