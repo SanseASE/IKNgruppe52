@@ -17,7 +17,7 @@ namespace Transport
 		}
 
 		return (~((sum & 0xFFFF)+(sum >> 16)))&0xFFFF;
-	}
+    }
 
 	bool Checksum::checkChecksum(char buf[], short size)
 	{

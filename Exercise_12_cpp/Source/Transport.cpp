@@ -3,7 +3,7 @@
 #include <cstdio>
 #include "../include/Transport.h"
 #include "../include/TransConst.h"
-#include "../include/Checksum.h"
+
 
 #define DEFAULT_SEQNO 2
 
@@ -72,7 +72,9 @@ namespace Transport
         ackBuf [SEQNO] = (ackType ? (buffer [SEQNO] + 1) % 2 : buffer [SEQNO]) ;
         ackBuf [TYPE] = ACK;
 		checksum->calcChecksum (ackBuf, ACKSIZE);
-
+/*
+    Her skal der laves fejl kode til implemtering af støj til test
+ */
 		link->send(ackBuf, ACKSIZE);
 	}
 
@@ -117,23 +119,16 @@ namespace Transport
         {
         memcpy(buffer, buf, size);
 
-        checksum->calcChecksum(buffer+CHKSUMSIZE, size-CHKSUMSIZE);
         checksum->checkChecksum(buffer+CHKSUMSIZE, size-CHKSUMSIZE);
 
-        return link->receive(buffer, size);
         } while(checksum == false || seqNo == old_seqNo);
+
+        sendAck(true);
 
         old_seqNo = seqNo;
 
- /*     modtage fra linklaget
-        se på vores header
-        calc checksum for alt der ikke er checksum
-        sammenligne checksum (brug checkchecksum)
-        send ack tilbage
-        modtage ok pakke
-        modtage seq som er forskellig fra tidligere
-            (loope indtil disse kriterier er opfyldt)
- */
+        return link->receive(buffer, size);
+
 
 	}
 }

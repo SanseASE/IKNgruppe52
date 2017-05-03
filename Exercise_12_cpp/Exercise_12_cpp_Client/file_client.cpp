@@ -1,11 +1,14 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <iostream>
 #include <cstring>
 #include <cstdlib>
 #include "../include/Transport.h"
 #include "../include/lib.h"
 #include "file_client.h"
+
+using namespace std;
 
 /// <summary>
 /// The BUFSIZE
@@ -51,7 +54,16 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 /// </param>
 int main(int argc, char** argv)
 {
-	new file_client(argc, argv);
-	
+
+   Link::Link link(BUFSIZE);
+
+   char recv_buf[100];
+
+   link.receive(recv_buf, sizeof(recv_buf));
+
+   cout << recv_buf << endl;
+
+    //new file_client(argc, argv);
+
 	return 0;
 }

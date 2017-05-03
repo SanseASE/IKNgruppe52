@@ -4,6 +4,7 @@
 #include <sstream>
 #include <cstring>
 #include "../include/Transport.h"
+#include "../include/Link.h"
 #include "../include/lib.h"
 #include "file_server.h"
 
@@ -45,7 +46,13 @@ void file_server::sendFile(std::string fileName, long fileSize, Transport::Trans
 /// </param>
 int main(int argc, char **argv)
 {
-	new file_server();
+
+    Link::Link link(BUFSIZE);
+
+    char send[100]= "BENJAMIN ER AWESOME";
+
+    link.send(send,sizeof(send));
+    //new file_server();
 	
 	return 0;
 }

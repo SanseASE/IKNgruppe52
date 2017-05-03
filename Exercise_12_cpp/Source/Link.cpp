@@ -83,13 +83,13 @@ void Link::send(const char buf[], short size)
         if (buf[i] == 'A')
         {
             sendbuf[count] = 'B';
-            sendbuf[count++] = 'C';
+            sendbuf[++count] = 'C';
             count++;
         }
-        if (buf[i] == 'B')
+        else if (buf[i] == 'B')
         {
             sendbuf[count] = 'B';
-            sendbuf[count++] = 'D';
+            sendbuf[++count] = 'D';
             count++;
         }
         else
@@ -99,19 +99,11 @@ void Link::send(const char buf[], short size)
         }
 
     }
+
     sendbuf[count]='A';
+    count++;
 
-
-
-
-    unsigned char final_sendbuf[count];
-    for(int i = 0; i < count; i++)
-    {
-        final_sendbuf[i] = sendbuf[i];
-    }
-
-    const unsigned char *send = final_sendbuf;
-    v24Write(serialPort, send, count);
+    v24Write(serialPort, (unsigned char*)sendbuf, count);
 }
 
 /**
@@ -125,30 +117,34 @@ void Link::send(const char buf[], short size)
  */
 short Link::receive(char buf[], short size)
 {
+
     unsigned char receive_buf[size-2];
     int count = 0;
-    for (int i =  1; i < size-1; i++)
-    {
 
-        if (buf[i] == 'B' & buf[i+1] == 'C')
-        {
-            receive_buf[count] = 'A';
-            count++;
-        }
-        if (buf[i] == 'B' & buf[i+1] == 'D')
-        {
-            receive_buf[count] = 'B';
-            count++;
-        }
-        else
-        {
-            receive_buf[count] = buf[i];
-            count++;
-        }
-    }
+    v24Read(serialPort, receive_buf, sizeof(receive_buf));
 
-    unsigned char* recv_buf = receive_buf;
-    v24Read(serialPort, recv_buf, count);
+
+         for (int i =  1; i < size-1; i++)
+         {
+
+             if (receive_buf[i] == 'B' & receive_buf[i+1] == 'C')
+             {
+                 buf[count] = 'A';
+                 count++;
+                 i++;
+             }
+             else if (receive_buf[i] == 'B' & receive_buf[i+1] == 'D')
+             {
+                 buf[count] = 'B';
+                 count++;
+                 i++;
+             }
+             else
+             {
+                 buf[count] = receive_buf[i];
+                 count++;
+             }
+         }
 }
 
 } /* namespace Link */
