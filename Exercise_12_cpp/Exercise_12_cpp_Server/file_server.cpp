@@ -49,10 +49,17 @@ int main(int argc, char **argv)
 
     Link::Link link(BUFSIZE);
 
-    char send[100]= "BENJAMIN ER AWESOME";
+    char send[100];
+    std::cout << "skriv meddelelsen her: " << std::endl;
+    while(1)
+    {
+    fgets(send, sizeof(send), stdin);
+    //std::cin >> send;
+    //char send[100]= "BENJAMIN ER AWESOME";
 
-    link.send(send,sizeof(send));
+    link.send(send, sizeof(send));
     //new file_server();
+    }
 	
 	return 0;
 }
