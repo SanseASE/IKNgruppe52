@@ -57,13 +57,15 @@ int main(int argc, char** argv)
 
    Link::Link link(BUFSIZE);
 
-   char recv_buf[100];
+   char recv_buf[1000] = {0};
 
-   link.receive(recv_buf, sizeof(recv_buf));
+   while(1)
+   {
+   link.receive(recv_buf, 1000);
 
    cout << recv_buf << endl;
-
+   }
     //new file_client(argc, argv);
 
-	return 0;
+    return 0;
 }
