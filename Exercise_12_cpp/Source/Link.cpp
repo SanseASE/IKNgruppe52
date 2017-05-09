@@ -1,4 +1,6 @@
 #include <cstdio>
+#include <iostream>
+#include <string.h>
 #include "../include/Link.h"
 
 namespace Link {
@@ -74,36 +76,34 @@ Link::~Link()
  */
 void Link::send(const char buf[], short size)
 {
-    char sendbuf[(size*2)+2] = {0};
     int count = 1;
-    sendbuf[0] = 'A';
-    for (int i =  0; i < size; i++)
-    {
-
-        if (buf[i] == 'A')
+        buffer[0] = 'A';
+        for (int i =  0; i < size; i++)
         {
-            sendbuf[count] = 'B';
-            sendbuf[++count] = 'C';
-            count++;
-        }
-        else if (buf[i] == 'B')
-        {
-            sendbuf[count] = 'B';
-            sendbuf[++count] = 'D';
-            count++;
-        }
-        else
-        {
-            sendbuf[count] = buf[i];
-            count++;
+
+            if (buf[i] == 'A')
+            {
+                buffer[count] = 'B';
+                buffer[++count] = 'C';
+                count++;
+            }
+            else if (buf[i] == 'B')
+            {
+                buffer[count] = 'B';
+                buffer[++count] = 'D';
+                count++;
+            }
+            else
+            {
+                buffer[count] = buf[i];
+                count++;
+            }
+
         }
 
-    }
+        buffer[count]='A';
 
-    sendbuf[count]='A';
-    count++;
-
-    v24Write(serialPort, (unsigned char*)sendbuf, count);
+        v24Write(serialPort, (unsigned char*)buffer, strlen(buffer));
 }
 
 /**
@@ -117,34 +117,39 @@ void Link::send(const char buf[], short size)
  */
 short Link::receive(char buf[], short size)
 {
-
-    unsigned char receive_buf[size-2];
     int count = 0;
 
-    v24Read(serialPort, receive_buf, sizeof(receive_buf));
+    v24Read(serialPort, (unsigned char*)buffer, 100);
+    std::cout << buffer<< std::endl;
 
-
+    if(buffer[0] == 'A')
+    {
          for (int i =  1; i < size-1; i++)
          {
 
-             if (receive_buf[i] == 'B' & receive_buf[i+1] == 'C')
+             if (buffer[i] == 'B' & buffer[i+1] == 'C')
              {
                  buf[count] = 'A';
                  count++;
                  i++;
              }
-             else if (receive_buf[i] == 'B' & receive_buf[i+1] == 'D')
+             else if (buffer[i] == 'B' & buffer[i+1] == 'D')
              {
                  buf[count] = 'B';
                  count++;
                  i++;
              }
+             else if(buffer[i] == 'A')
+             {
+                 buf[count] = 0;
+             }
              else
              {
-                 buf[count] = receive_buf[i];
+                 buf[count] = buffer[i];
                  count++;
              }
-         }
-}
 
+         }
+    }
+}
 } /* namespace Link */

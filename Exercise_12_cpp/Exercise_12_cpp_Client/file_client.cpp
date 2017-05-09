@@ -55,17 +55,20 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 int main(int argc, char** argv)
 {
 
-   Link::Link link(BUFSIZE);
+    Link::Link link(BUFSIZE);
 
-   char recv_buf[1000] = {0};
-
+   char recv_buf[100];
+   link.receive(recv_buf, 100);
+   cout << recv_buf << endl;
+   /*
    while(1)
    {
-   link.receive(recv_buf, 1000);
+   link.receive(recv_buf, 100);
 
    cout << recv_buf << endl;
    }
     //new file_client(argc, argv);
+    */
 
     return 0;
 }

@@ -103,6 +103,8 @@ namespace Transport
         link->send(buffer, size);
         } while(receiveAck() == false);
 
+        std::cout << buffer<< std::endl;
+
         old_seqNo = DEFAULT_SEQNO;
 
 	}
@@ -117,7 +119,11 @@ namespace Transport
     {
         do
         {
-        memcpy(buffer, buf, size);
+        link->receive(buffer,size);
+        //memcpy(buffer, buf, size);
+        std::cout << buffer << std::endl;
+        std::cout << "buffer" << std::endl;
+
 
         checksum->checkChecksum(buffer+CHKSUMSIZE, size-CHKSUMSIZE);
 
@@ -127,7 +133,7 @@ namespace Transport
 
         old_seqNo = seqNo;
 
-        return link->receive(buffer, size);
+        return (buffer, size);
 
 
 	}
