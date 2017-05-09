@@ -47,10 +47,10 @@ void file_server::sendFile(std::string fileName, long fileSize, Transport::Trans
 int main(int argc, char **argv)
 {
 
-    Link::Link link(BUFSIZE);
+    Transport::Transport trans(BUFSIZE);
 
     char send[100]= "BENJAMIN ER AWESOME";
-    link.send(send, strlen(send));
+    trans.send(send, strlen(send));
 
     /*
     char send[100];
