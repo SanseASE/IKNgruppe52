@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
     Transport::Transport trans(BUFSIZE);
 
-    char send[100]= "BENJAMIN ER AWESOME";
+    char send[100]= "HENNING!! DIN OSTEMAD BLIVER KOLD";
     trans.send(send, strlen(send));
 
     /*

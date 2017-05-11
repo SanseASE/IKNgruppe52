@@ -10,7 +10,7 @@ namespace Transport
 		{
 		}
 		bool checkChecksum(char buf[], short size);
-		void calcChecksum (char buf[], short size);
+        void calcChecksum (char buf[], short size);
 	private:
 		long checksum (char buf[], short size);
 	};

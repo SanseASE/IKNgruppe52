@@ -76,7 +76,7 @@ Link::~Link()
  */
 void Link::send(const char buf[], short size)
 {
-    int count = 1;
+       int count = 1;
         buffer[0] = 'A';
         for (int i =  0; i < size; i++)
         {
@@ -120,7 +120,8 @@ short Link::receive(char buf[], short size)
     int count = 0;
 
     v24Read(serialPort, (unsigned char*)buffer, 100);
-    std::cout << buffer<< std::endl;
+
+    std::cout << "Modtaget i link layer: " << buffer << std::endl;
 
     if(buffer[0] == 'A')
     {
@@ -153,3 +154,4 @@ short Link::receive(char buf[], short size)
     }
 }
 } /* namespace Link */
+

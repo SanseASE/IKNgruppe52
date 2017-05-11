@@ -17,7 +17,7 @@ namespace Transport
 		link = new Link::Link(BUFSIZE+ACKSIZE);
 		checksum = new Checksum();
 		buffer = new char[BUFSIZE+ACKSIZE];
-		seqNo = 0;
+        seqNo = '0';
 		old_seqNo = DEFAULT_SEQNO;
 		errorCount = 0;
         recvSize = 0;
@@ -72,9 +72,7 @@ namespace Transport
         ackBuf [SEQNO] = (ackType ? (buffer [SEQNO] + 1) % 2 : buffer [SEQNO]) ;
         ackBuf [TYPE] = ACK;
 		checksum->calcChecksum (ackBuf, ACKSIZE);
-/*
-    Her skal der laves fejl kode til implemtering af støj til test
- */
+
 		link->send(ackBuf, ACKSIZE);
 	}
 
@@ -87,23 +85,22 @@ namespace Transport
 	/// <param name='size'>
 	/// Size.
 	/// </param>
-	void Transport::send(const char buf[], short size)
+    void Transport::send(const char buf[], short size)
 	{
-      do
-        {
+      do{
         buffer[SEQNO] = seqNo;
         buffer[TYPE] = DATA;
+
         memcpy(buffer+ACKSIZE, buf, size);
 
-        checksum->calcChecksum(buffer+CHKSUMSIZE, (size+ACKSIZE)-CHKSUMSIZE);
 
-        /*
-     Her skal der laves fejl kode til implemtering af støj til test
-        */
-        link->send(buffer, size);
+        checksum->calcChecksum(buffer, size+ACKSIZE);
+
+        for(int i = 0; i<size+ACKSIZE; i++){
+        std::cout << "Transport buffer: " << (char)buffer[i] << std::endl;}
+
+        link->send(buffer, size+ACKSIZE);
         } while(receiveAck() == false);
-
-        std::cout << buffer<< std::endl;
 
         old_seqNo = DEFAULT_SEQNO;
 
@@ -115,15 +112,13 @@ namespace Transport
 	/// <param name='buffer'>
 	/// Buffer.
 	/// </param>
-	short Transport::receive(char buf[], short size)
+    short Transport::receive(char buf[], short size)
     {
         do
         {
         link->receive(buffer,size);
-        //memcpy(buffer, buf, size);
-        std::cout << buffer << std::endl;
-        std::cout << "buffer" << std::endl;
 
+        std::cout << "Modtaget i transport layer: " << buffer << std::endl << std::endl;
 
         checksum->checkChecksum(buffer+CHKSUMSIZE, size-CHKSUMSIZE);
 
@@ -133,9 +128,11 @@ namespace Transport
 
         old_seqNo = seqNo;
 
-        return (buffer, size);
+        memcpy(buf, buffer+ACKSIZE, size);
+
+        return (buf, size);
 
 
-	}
+    }
 }
 

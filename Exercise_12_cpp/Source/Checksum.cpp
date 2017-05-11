@@ -27,7 +27,7 @@ namespace Transport
 		return( checksum(buffer, size-CHKSUMSIZE) == (long)((unsigned char)buf[CHKSUMHIGH] << 8 | (unsigned char)buf[CHKSUMLOW]));
 	}
 
-	void Checksum::calcChecksum (char buf[], short size)
+    void Checksum::calcChecksum (char buf[], short size)
 	{
 		char buffer[size-CHKSUMSIZE];
 		long sum = 0;
