@@ -17,7 +17,7 @@ using namespace std;
 
 /// <summary>
 /// Initializes a new instance of the <see cref="file_client"/> class.
-/// 
+///
 /// file_client metoden opretter en peer-to-peer forbindelse
 /// Sender en forspørgsel for en bestemt fil om denne findes på serveren
 /// Modtager filen hvis denne findes eller en besked om at den ikke findes (jvf. protokol beskrivelse)
@@ -29,7 +29,7 @@ using namespace std;
 /// </param>
 file_client::file_client(int argc, char **argv)
 {
-   	// TO DO Your own code
+    // TO DO Your own code
 }
 
 /// <summary>
@@ -43,8 +43,8 @@ file_client::file_client(int argc, char **argv)
 /// </param>
 void file_client::receiveFile (std::string fileName, Transport::Transport *transport)
 {
-		// TO DO Your own code
-}		
+        // TO DO Your own code
+}
 
 /// <summary>
 /// The entry point of the program, where the program control starts and ends.
@@ -55,11 +55,11 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 int main(int argc, char** argv)
 {
 
-    Link::Link link(BUFSIZE);
+    Transport::Transport trans(BUFSIZE);
 
    char recv_buf[100];
-   link.receive(recv_buf, 100);
-   cout << recv_buf << endl;
+   trans.receive(recv_buf, 100);
+   cout << "Besked: " << recv_buf << endl;
    /*
    while(1)
    {
