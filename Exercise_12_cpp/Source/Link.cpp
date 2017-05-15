@@ -121,6 +121,7 @@ short Link::receive(char buf[], short size)
 
     v24Read(serialPort, (unsigned char*)buffer, 100);
 
+
     std::cout << "Modtaget i link layer: " << buffer << std::endl;
 
     if(buffer[0] == 'A')
