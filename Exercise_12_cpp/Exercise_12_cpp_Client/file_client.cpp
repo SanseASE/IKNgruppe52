@@ -94,17 +94,17 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 int main(int argc, char** argv)
 {
 
-    file_client * client = new file_client(argc, argv);
+    //file_client * client = new file_client(argc, argv);
 
 
 
-    /*
+
     Transport::Transport trans(BUFSIZE);
 
    char recv_buf[100];
    trans.receive(recv_buf, 100);
    cout << "Besked: " << recv_buf << endl;
-
+/*
    while(1)
    {
    link.receive(recv_buf, 100);

@@ -73,6 +73,13 @@ namespace Transport
         ackBuf [TYPE] = ACK;
 		checksum->calcChecksum (ackBuf, ACKSIZE);
 
+        if(++errorCount == 1) // Simulate noise
+         {
+         ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
+         std::cout <<"Noise! byte #1 is spoiled in the third transmitted ACK-package" << std::endl;
+         }
+
+         link->send(ackBuf, ACKSIZE);
 		link->send(ackBuf, ACKSIZE);
 	}
 
@@ -87,26 +94,26 @@ namespace Transport
 	/// </param>
     void Transport::send(const char buf[], short size)
 	{
-      do{
+    do{
+
         buffer[SEQNO] = seqNo;
         buffer[TYPE] = DATA;
 
         memcpy(buffer+ACKSIZE, buf, size);
-
-
         checksum->calcChecksum(buffer, size+ACKSIZE);
 
-        for(int i = 0; i<size+ACKSIZE; i++){
-        std::cout << "Transport buffer: " << (char)buffer[i] << std::endl;}
 
+        /// Transport test
         /*if(++errorCount == 1) // Simulate noise
          {
-         buffer[1]++;          // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
+         //buffer[1]++;          // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
          std::cout << "Noise! - byte #1 is spoiled in the third transmission" << std::endl;
          //break;
          }*/
 
+        /// Sender pakke
         link->send(buffer, size+ACKSIZE);
+
         } while(receiveAck() == false);
 
         old_seqNo = DEFAULT_SEQNO;
@@ -120,26 +127,31 @@ namespace Transport
 	/// Buffer.
 	/// </param>
     short Transport::receive(char buf[], short size)
-    {
-        do
-        {
-        link->receive(buffer,size);
+     { bool ack;
+         do
+         {
+         link->receive(buffer,size);
 
-        std::cout << "Modtaget i transport layer: " << buffer << std::endl << std::endl;
+        // std::cout << "Modtaget i transport layer: " << buffer << std::endl << std::endl;
 
-        checksum->checkChecksum(buffer+CHKSUMSIZE, size-CHKSUMSIZE);
+         ack = checksum->checkChecksum(buffer+CHKSUMSIZE, size-CHKSUMSIZE);
 
-        } while(checksum == false || buffer[SEQNO] == old_seqNo);
+         if(ack == false)
+             sendAck(false);
 
-        sendAck(true);
+         if(buffer[SEQNO] == old_seqNo)
+         {
+             ack = false;
+             sendAck(true);
+         }
+         } while(ack == false);
 
-        old_seqNo = buffer[SEQNO];
+         sendAck(true);
 
-        memcpy(buf, buffer+ACKSIZE, size);
+         old_seqNo = buffer[SEQNO];
 
-        return (buf, size);
+         memcpy(buf, buffer+ACKSIZE, size);
 
-
-    }
-}
-
+         return (buf, size);
+     }
+ }

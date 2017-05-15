@@ -92,6 +92,7 @@ int main(int argc, char **argv)
    Transport::Transport trans(BUFSIZE);
 
     char send[100]= "HENNING!! DIN OSTEMAD BLIVER KOLD";
+    std::cout << "Streng som skal sendes: " << send << std::endl;
     trans.send(send, strlen(send));
 /*
     char send[100];

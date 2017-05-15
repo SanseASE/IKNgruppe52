@@ -104,6 +104,7 @@ void Link::send(const char buf[], short size)
         buffer[count]='A';
 
         v24Write(serialPort, (unsigned char*)buffer, strlen(buffer));
+        std::cout << "Besked sendt: " << buffer << std::endl;
 }
 
 /**
@@ -120,9 +121,6 @@ short Link::receive(char buf[], short size)
     int count = 0;
 
     v24Read(serialPort, (unsigned char*)buffer, 100);
-
-
-    std::cout << "Modtaget i link layer: " << buffer << std::endl;
 
     if(buffer[0] == 'A')
     {
