@@ -88,13 +88,12 @@ void file_server::sendFile(std::string fileName, long fileSize, Transport::Trans
 /// </param>
 int main(int argc, char **argv)
 {
-     file_server* server= new file_server();
-   /* Transport::Transport trans(BUFSIZE);
+     //file_server* server= new file_server();
+   Transport::Transport trans(BUFSIZE);
 
     char send[100]= "HENNING!! DIN OSTEMAD BLIVER KOLD";
     trans.send(send, strlen(send));
-
-
+/*
     char send[100];
     std::cout << "skriv meddelelsen her: " << std::endl;
     while(1)
@@ -102,7 +101,7 @@ int main(int argc, char **argv)
     fgets(send, sizeof(send), stdin);
 
      link.send(send, sizeof(send));
-    }*/
-	
+    }
+    */
 	return 0;
 }
