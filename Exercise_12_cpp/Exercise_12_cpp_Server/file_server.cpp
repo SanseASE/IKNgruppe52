@@ -4,9 +4,13 @@
 #include <sstream>
 #include <cstring>
 #include "../include/Transport.h"
-#include "../include/Link.h"
 #include "../include/lib.h"
 #include "file_server.h"
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+using namespace std;
 
 /// <summary>
 /// The BUFSIZE
@@ -18,7 +22,23 @@
 /// </summary>
 file_server::file_server ()
 {
-	// TO DO Your own code
+    Transport::Transport * transport = new Transport::Transport(BUFSIZE);
+    long fileSize;
+
+    //Modtage et filnavn
+    transport->receive(buffer,BUFSIZE);
+    std::cout << "Filnavn: " << buffer << std::endl;
+    string fileName(buffer);
+
+
+    //Sende filstørrelse
+    sprintf(buffer,"%d",fileSize);
+    transport->send(buffer,sizeof(buffer));
+
+
+    //Sender fil
+    sendFile(fileName,fileSize,transport);
+
 }
 
 /// <summary>
@@ -35,7 +55,29 @@ file_server::file_server ()
 /// </param>
 void file_server::sendFile(std::string fileName, long fileSize, Transport::Transport *transport)
 {
-	// To do Your own code
+       int fd;
+
+       // Åbner fil
+       fd = open(fileName.c_str(), O_RDONLY);
+
+       /*Sender fil*/
+       for (int i = 0; i<fileSize/1000+1; i++)
+       {
+
+           if (i<fileSize/1000) //Så længe der er mere end 1000 tilbage
+           {
+               read(fd, buffer, BUFSIZE);
+               transport->send(buffer,BUFSIZE);
+           }
+           else
+           {
+               read(fd, buffer, fileSize%BUFSIZE);
+               transport->send(buffer, fileSize%BUFSIZE);
+           }
+
+       }
+
+       close(fd);
 }
 
 /// <summary>
@@ -46,13 +88,13 @@ void file_server::sendFile(std::string fileName, long fileSize, Transport::Trans
 /// </param>
 int main(int argc, char **argv)
 {
-
-    Transport::Transport trans(BUFSIZE);
+     file_server* server= new file_server();
+   /* Transport::Transport trans(BUFSIZE);
 
     char send[100]= "HENNING!! DIN OSTEMAD BLIVER KOLD";
     trans.send(send, strlen(send));
 
-    /*
+
     char send[100];
     std::cout << "skriv meddelelsen her: " << std::endl;
     while(1)
@@ -60,7 +102,6 @@ int main(int argc, char **argv)
     fgets(send, sizeof(send), stdin);
 
      link.send(send, sizeof(send));
-    //new file_server();
     }*/
 	
 	return 0;

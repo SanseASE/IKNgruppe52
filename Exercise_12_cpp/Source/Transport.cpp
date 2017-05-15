@@ -122,11 +122,11 @@ namespace Transport
 
         checksum->checkChecksum(buffer+CHKSUMSIZE, size-CHKSUMSIZE);
 
-        } while(checksum == false || seqNo == old_seqNo);
+        } while(checksum == false || buffer[SEQNO] == old_seqNo);
 
         sendAck(true);
 
-        old_seqNo = seqNo;
+        old_seqNo = buffer[SEQNO];
 
         memcpy(buf, buffer+ACKSIZE, size);
 
