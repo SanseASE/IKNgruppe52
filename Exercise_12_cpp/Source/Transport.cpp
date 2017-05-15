@@ -99,6 +99,13 @@ namespace Transport
         for(int i = 0; i<size+ACKSIZE; i++){
         std::cout << "Transport buffer: " << (char)buffer[i] << std::endl;}
 
+        /*if(++errorCount == 1) // Simulate noise
+         {
+         buffer[1]++;          // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
+         std::cout << "Noise! - byte #1 is spoiled in the third transmission" << std::endl;
+         //break;
+         }*/
+
         link->send(buffer, size+ACKSIZE);
         } while(receiveAck() == false);
 
