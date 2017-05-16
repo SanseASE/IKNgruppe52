@@ -103,30 +103,6 @@ void file_client::receiveFile (std::string filepath, Transport::Transport *trans
 /// </param>
 int main(int argc, char** argv)
 {
-    /// App Test
     new file_client(argc, argv);
-
-    /** Link Test
-    Link::Link l(BUFSIZE);
-    std::cout << "Link Test" << std::endl;
-    std::cout << "App: Sending message: " << argv[1] << std::endl;
-    l.send(argv[1], strlen(argv[1]));
-    */
-
-    /// Transport Test
-    /**
-    Transport::Transport t(1000);
-    std::string toSend;
-    std::cout << "Transport Test" << std::endl;
-
-    while(1){
-        std::cout << "\nType the message to send: ";
-        std::cin >> toSend;
-        t.send(toSend.c_str(), toSend.length());
-
-    }
-    */
-
-
     return 0;
 }
