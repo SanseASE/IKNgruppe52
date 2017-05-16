@@ -103,6 +103,6 @@ void file_client::receiveFile (std::string filepath, Transport::Transport *trans
 /// </param>
 int main(int argc, char** argv)
 {
-    new file_client(argc, argv);
+  new file_client(argc, argv);
     return 0;
 }

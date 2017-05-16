@@ -92,11 +92,11 @@ void Link::send(const char buf[], short size)
  */
 short Link::receive(char buf[], short size)
 {
-	//variable to determine real end
+    //variable to determine real end
     short count = 0, i = 0;
 
-	
-	//Wait for an 'A'
+
+    //Wait for an 'A'
     while(v24Getc(serialPort) != 'A'){}
 
 
@@ -106,6 +106,7 @@ short Link::receive(char buf[], short size)
 
         // Check for Delimiter
         if(buffer[count] == 'A'){
+            buffer[count] = 0;
 
             return i;
         }
