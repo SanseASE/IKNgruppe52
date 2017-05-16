@@ -95,6 +95,12 @@ namespace Transport
             // Calculating checksum
             checksum->calcChecksum(buffer,size+ACKSIZE);
 
+            if(++errorCount == 3) // Simulate noise
+             {
+             buffer[1]++;
+             std::cout << "Noise!" << std::endl;
+             }
+
             // Send packet
             link->send(buffer, size+ACKSIZE);
 
