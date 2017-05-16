@@ -69,7 +69,7 @@ namespace Transport
     /// </param>
     void Transport::sendAck (bool ackType)
     {
-        char ackBuf[ACKSIZE];
+        //char ackBuf[ACKSIZE];
         ackBuf [SEQNO] = (ackType ? (buffer [SEQNO] + 1) % 2 : buffer [SEQNO]) ;
         ackBuf [TYPE] = ACK;
         checksum->calcChecksum (ackBuf, ACKSIZE);
@@ -94,17 +94,14 @@ namespace Transport
     /// </param>
     void Transport::send(const char buf[], short size)
     {
-        bool ack;
-        errorCount = 0;
-    do{
-
         buffer[SEQNO] = seqNo;
         buffer[TYPE] = DATA;
 
         memcpy(buffer+ACKSIZE, buf, size);
         checksum->calcChecksum(buffer, size+ACKSIZE);
 
-
+        bool ack;
+        errorCount = 0;
         /// Transport test
         /*if(++errorCount == 1) // Simulate noise
          {
@@ -112,14 +109,15 @@ namespace Transport
          std::cout << "Noise! - byte #1 is spoiled in the third transmission" << std::endl;
          //break;
          }*/
-
+        do{
+        std::cout << "Transport: Error count = " << errorCount << std::endl;
         /// Sender pakke
         link->send(buffer, size+ACKSIZE);
 
         ack = receiveAck();
         std::cout << "Transport: " << (ack ? "Good" : "Bad") << " ack received" << std::endl;
 
-        } while(++errorCount < 5 && ack == false);
+        } while(++errorCount < 5 && ack != true);
 
         if (errorCount == 5 && !ack){
                     std::cout << "Transport: Error count = 5 -> send request aborted" << std::endl;
@@ -137,13 +135,11 @@ namespace Transport
     /// </param>
     short Transport::receive(char buf[], short size)
      {
-        bool check;
 
         while(1){
             recvSize = link->receive(buffer,size+ACKSIZE);
 
-            check = checksum->checkChecksum(buffer, recvSize);
-            if(buffer[TYPE] != DATA || check == false){
+            if(buffer[TYPE] != DATA || checksum->checkChecksum(buffer, recvSize) == false){
                 std::cout << "Transport: Error in received message" << std::endl
                           << "Transport: Sending ACK" << (int)buffer[SEQNO]+1%2 << std::endl;
                 sendAck(false);
@@ -166,7 +162,7 @@ namespace Transport
         }
 
          old_seqNo = buffer[SEQNO];
-         memcpy(buf, buffer+ACKSIZE, size);
+         memcpy(buf, buffer+ACKSIZE, recvSize-ACKSIZE);
 
          return recvSize-ACKSIZE;
      }

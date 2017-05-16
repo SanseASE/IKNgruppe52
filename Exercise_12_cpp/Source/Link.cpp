@@ -9,9 +9,9 @@ namespace Link {
   * Explicitet constructor for linklaget.
   * Åbner den serielle port og sætter baudraten, paritet og antal stopbits
   */
-Link::Link(int bufsize)
+Link::Link(int bufsize) : bufsize_(bufsize)
 {
-    buffer = new char[(bufsize*2)];
+    buffer = new char[(bufsize*2)+2];
 
     serialPort=v24OpenPort("/dev/ttyS1",V24_STANDARD);
     if ( serialPort==NULL )
@@ -76,7 +76,7 @@ Link::~Link()
  */
 void Link::send(const char buf[], short size)
 {
-    bzero(buffer, strlen(buffer));
+
     if(size > bufsize_){
         std::cout << "Link: ERROR Message to big" << std::endl;
         return;
