@@ -131,4 +131,4 @@ short Link::receive(char buf[], short size)
 }
 
 } /* namespace Link */
-//Tobias er ikke sej
+

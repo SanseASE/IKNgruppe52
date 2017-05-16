@@ -89,33 +89,6 @@ void file_server::sendFile(std::string fileName, long fileSize, Transport::Trans
 /// </param>
 int main(int argc, char **argv)
 {
-    /// App Test
     new file_server();
-
-    /// Link Test
-    /**
-    Link::Link l(BUFSIZE);
-    char buf[BUFSIZE];
-
-    std::cout << "Link Test" << std::endl;
-    int rc = l.receive(buf, BUFSIZE);
-    buf[rc] = 0;
-    std::cout << "App: Message received: " << buf << std::endl;
-    */
-
-    /// Transport Test
-    /**
-    Transport::Transport t(BUFSIZE);
-    char buf[BUFSIZE];
-    std::cout << "Transport Test" << std::endl;
-
-    while(1){
-        std::cout << "App: Waiting for message" << std::endl;
-        int rc = t.receive(buf, BUFSIZE);
-        buf[rc] = 0;
-        std::cout << "App: Message received: " << buf << '\n' << std::endl;
-    }
-    */
-
 	return 0;
 }

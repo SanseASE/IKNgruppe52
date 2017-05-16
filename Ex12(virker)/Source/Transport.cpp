@@ -70,12 +70,7 @@ namespace Transport
         ackBuf[SEQNO] = (ackType ? buffer[SEQNO] : (buffer [SEQNO] + 1) % 2) ;
         ackBuf[TYPE] = ACK;
 		checksum->calcChecksum (ackBuf, ACKSIZE);
-        /// Transport Test
-        /*if (rand() % 2){
-            ackBuf[1]++;
-            std::cout << "Transport: Noise! Ack byte #1 corrupted" << std::endl;
-        }*/
-        /// End Test
+
 		link->send(ackBuf, ACKSIZE);
 	}
 
@@ -95,18 +90,10 @@ namespace Transport
             // Add transport header
             buffer[SEQNO] = seqNo;
             buffer[TYPE] = DATA;
+            // Filling local buffer
             memcpy(buffer+ACKSIZE, buf, size);
+            // Calculating checksum
             checksum->calcChecksum(buffer,size+ACKSIZE);
-
-            ///Transport Test - corrupt message
-            /*if (rand() % 2){
-                buffer[1]++;
-                std::cout << "Transport: Noise! Message byte #1 corrupted!" << std::endl;
-            }
-            else{
-                buffer[4] = temp;
-            }*/
-            /// End test
 
             // Send packet
             link->send(buffer, size+ACKSIZE);
@@ -115,6 +102,7 @@ namespace Transport
             ack = receiveAck();
             std::cout << "Transport: " << (ack ? "Good" : "Bad") << " ack received" << std::endl;
 
+            // looping until we get a good ack from client
         }while(ack != true);
 
 	}
@@ -129,6 +117,7 @@ namespace Transport
 	short Transport::receive(char buf[], short size)
 	{
         while(1){
+            // receive the buffer from link layer
             recvSize = link->receive(buffer, size+ACKSIZE);
 
             // Check if there's an error in the received message
@@ -151,7 +140,9 @@ namespace Transport
             }
         }
 
+        // saving seqNo in varible for later use
         old_seqNo = buffer[SEQNO];
+        // Filling buffer
         memcpy(buf,buffer+ACKSIZE,recvSize-ACKSIZE);
 
         return recvSize-ACKSIZE;
