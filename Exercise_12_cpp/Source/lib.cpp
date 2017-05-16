@@ -36,7 +36,7 @@ void error(const std::string msg)
  */
 const std::string extractFileName(const std::string fileName)
 {
-	return fileName.substr(fileName.find_last_of("/")+1);
+    return fileName.substr(fileName.find_last_of("/")+1);
 }
 
 /**
@@ -47,9 +47,9 @@ const std::string extractFileName(const std::string fileName)
  */
 const long check_File_Exists(std::string fileName)
 {
-	struct stat sts;
-	if ((stat (fileName.c_str(), &sts)) == -1)
-		return 0;
+    struct stat sts;
+    if ((stat (fileName.c_str(), &sts)) == -1)
+        return 0;
 
-	return sts.st_size;
+    return sts.st_size;
 }

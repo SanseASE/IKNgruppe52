@@ -20,6 +20,7 @@ private:
 	Link& operator=(const Link &) {};
 	char *buffer;
 	v24_port_t *serialPort;
+    int bufsize_;
 };
 
 
