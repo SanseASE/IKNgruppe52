@@ -11,8 +11,8 @@ namespace Link {
   */
 Link::Link(int bufsize)
 {
-	buffer = new char[(bufsize*2)];
-	
+    buffer = new char[(bufsize*2)];
+
     serialPort=v24OpenPort("/dev/ttyS1",V24_STANDARD);
     if ( serialPort==NULL )
     {
@@ -40,17 +40,17 @@ Link::Link(int bufsize)
     rc=v24FlushRxQueue(serialPort);
     if ( rc!= V24_E_OK )
     {
-    	fputs("error: flushing receiverqueue\n", stderr);
-    	v24ClosePort(serialPort);
-    	exit(1);
+        fputs("error: flushing receiverqueue\n", stderr);
+        v24ClosePort(serialPort);
+        exit(1);
     }
 
     rc=v24FlushTxQueue(serialPort);
     if ( rc!= V24_E_OK )
     {
-    	fputs("error: flushing transmitterqueue\n", stderr);
-    	v24ClosePort(serialPort);
-    	exit(1);
+        fputs("error: flushing transmitterqueue\n", stderr);
+        v24ClosePort(serialPort);
+        exit(1);
     }
 */
 }
@@ -61,10 +61,10 @@ Link::Link(int bufsize)
   */
 Link::~Link()
 {
-	if(serialPort != NULL)
-		v24ClosePort(serialPort);
-	if(buffer != NULL)
-		delete [] buffer;
+    if(serialPort != NULL)
+        v24ClosePort(serialPort);
+    if(buffer != NULL)
+        delete [] buffer;
 }
 
 /**
@@ -76,34 +76,33 @@ Link::~Link()
  */
 void Link::send(const char buf[], short size)
 {
-       int count = 1;
+    bzero(buffer, strlen(buffer));
+
+        int count = 1;
         buffer[0] = 'A';
         for (int i =  0; i < size; i++)
         {
 
             if (buf[i] == 'A')
             {
-                buffer[count] = 'B';
-                buffer[++count] = 'C';
-                count++;
+                buffer[count++] = 'B';
+                buffer[count++] = 'C';
             }
             else if (buf[i] == 'B')
             {
-                buffer[count] = 'B';
-                buffer[++count] = 'D';
-                count++;
+                buffer[count++] = 'B';
+                buffer[count++] = 'D';
             }
             else
             {
                 buffer[count] = buf[i];
-                count++;
             }
 
         }
 
-        buffer[count]='A';
+        buffer[count++]='A';
 
-        v24Write(serialPort, (unsigned char*)buffer, strlen(buffer));
+        v24Write(serialPort, (unsigned char*)buffer, count);
         std::cout << "Besked sendt: " << buffer << std::endl;
 }
 
@@ -118,39 +117,36 @@ void Link::send(const char buf[], short size)
  */
 short Link::receive(char buf[], short size)
 {
+    int i = 0;
     int count = 0;
 
-    v24Read(serialPort, (unsigned char*)buffer, 100);
+    while(v24Getc(serialPort) != 'A'){}
 
-    if(buffer[0] == 'A')
-    {
-         for (int i =  1; i < size-1; i++)
-         {
+    while(1){
 
-             if (buffer[i] == 'B' & buffer[i+1] == 'C')
-             {
-                 buf[count] = 'A';
-                 count++;
-                 i++;
-             }
-             else if (buffer[i] == 'B' & buffer[i+1] == 'D')
-             {
-                 buf[count] = 'B';
-                 count++;
-                 i++;
-             }
-             else if(buffer[i] == 'A')
-             {
-                 buf[count] = 0;
-             }
-             else
-             {
-                 buf[count] = buffer[i];
-                 count++;
-             }
+    buffer[count] = v24Getc(serialPort);
 
-         }
+    if(buffer[count] == 'A'){
+
+        return i;}
+
+    if(count > 0 && buffer[count-1] == 'B'){
+        if(buffer[count] == 'C')
+            buf[i-1] = 'A';
+
+        else if(buffer[count] == 'D'){}
+        else{
+            std::cout << "Link: transmission error!" << std::endl;
+            return -1;
+        }
+    }
+    else{
+        buf[i++] = buffer[count];
+    }
+
+    ++count;
     }
 }
+
 } /* namespace Link */
 

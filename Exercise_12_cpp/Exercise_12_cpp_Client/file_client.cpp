@@ -1,17 +1,13 @@
-#include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <cstring>
+#include <cstdlib>
 #include "../include/Transport.h"
 #include "../include/lib.h"
 #include "file_client.h"
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
 
-using namespace std;
-
+#include "../include/Link.h"
 /// <summary>
 /// The BUFSIZE
 /// </summary>
@@ -31,16 +27,37 @@ using namespace std;
 /// </param>
 file_client::file_client(int argc, char **argv)
 {
-    Transport::Transport * transport = new Transport::Transport(BUFSIZE);
+    long filesize;
+    char filesize_buf[BUFSIZE];
 
-    //Sende filnavn
-    transport->send(argv[1],sizeof(argv[1]));
+    Transport::Transport t(BUFSIZE);
 
+    //Write filepath
+    std::cout << "App: Sending filepath" << std::endl;
+    char filepath[BUFSIZE] = {};
+    strncpy(filepath, argv[1], BUFSIZE);
+    strtok(filepath, "\n");
+    t.send(filepath, strlen(filepath));
 
-    //Modtage fil
-    string fileName(argv[1]);
-    receiveFile(fileName,transport);
+    //Read file size
+    std::cout << "App: Reading file size" << std::endl;
+    if (t.receive(filesize_buf, BUFSIZE) < 0){
+        std::cout << "App: Error in receive" << std::endl;
+        exit(1);
+    }
+    filesize = atol(filesize_buf);
+
+    //Read file
+    if(filesize != 0){
+        std::cout << "App: Receiving file" << std::endl;
+        receiveFile(filepath, &t);
+        std::cout << "App: File received" << std::endl;
+    }
+    else{
+        std::cout << "App: File not found" << std::endl;
+    }
 }
+
 
 /// <summary>
 /// Receives the file.
@@ -51,38 +68,31 @@ file_client::file_client(int argc, char **argv)
 /// <param name='transport'>
 /// Transportlaget
 /// </param>
-void file_client::receiveFile (std::string fileName, Transport::Transport *transport)
+void file_client::receiveFile (std::string filepath, Transport::Transport *transport)
 {
-    int fd;
-    char receive_buf[BUFSIZE];
-    long fileSize;
+    int count = BUFSIZE;
+    char buffer[BUFSIZE] = {};
 
-    transport->receive(receive_buf,BUFSIZE);
-    fileSize = atol(receive_buf);
+    //Get filename
+    const std::string filename = extractFileName(filepath);
 
-    //Åbner fil
+    std::string realfilepath = "/root/Downloads/" + filename;
 
-     fd = open(fileName.c_str(), O_WRONLY | O_CREAT,S_IXGRP);
+    //Create file to save incomming data
+    FILE * fp = fopen(realfilepath.c_str(), "w");
 
+    //Open file stream
+    std::ofstream file_stream(realfilepath);
 
-     //Modtager fil
-     for (int i = 0; i<fileSize/BUFSIZE+1; i++)
-     {
-         bzero(receive_buf,BUFSIZE); //Tømmer bufferen
+    //Receive file 1000 bytes at a time
+    while (count == BUFSIZE){
+        count = transport->receive(buffer, BUFSIZE);
+        file_stream.write(buffer, count);
+    }
 
-         if (i<fileSize/BUFSIZE) //Så længe der er mere end 1000 tilbage
-         {
-             read(fd,receive_buf,BUFSIZE);
-             transport->receive(receive_buf, BUFSIZE);
-         }
-
-         else
-         {
-             read(fd,receive_buf,(fileSize%BUFSIZE));
-             transport->receive(receive_buf, (fileSize%BUFSIZE));
-
-         }
-     }
+    //Close file and stream
+    file_stream.close();
+    fclose(fp);
 }
 
 /// <summary>
@@ -93,25 +103,30 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 /// </param>
 int main(int argc, char** argv)
 {
+    /// App Test
+    new file_client(argc, argv);
 
-    //file_client * client = new file_client(argc, argv);
-
-
-
-
-    Transport::Transport trans(BUFSIZE);
-
-   char recv_buf[100];
-   trans.receive(recv_buf, 100);
-   cout << "Besked: " << recv_buf << endl;
-/*
-   while(1)
-   {
-   link.receive(recv_buf, 100);
-
-   cout << recv_buf << endl;
-   }
+    /** Link Test
+    Link::Link l(BUFSIZE);
+    std::cout << "Link Test" << std::endl;
+    std::cout << "App: Sending message: " << argv[1] << std::endl;
+    l.send(argv[1], strlen(argv[1]));
     */
+
+    /// Transport Test
+    /**
+    Transport::Transport t(1000);
+    std::string toSend;
+    std::cout << "Transport Test" << std::endl;
+
+    while(1){
+        std::cout << "\nType the message to send: ";
+        std::cin >> toSend;
+        t.send(toSend.c_str(), toSend.length());
+
+    }
+    */
+
 
     return 0;
 }
