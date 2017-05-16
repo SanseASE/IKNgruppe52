@@ -90,20 +90,13 @@ namespace Transport
 	/// </param>
 	void Transport::send(const char buf[], short size)
     {
-        // Add transport header
-        //seqNo = ((old_seqNo + 1) % 2);
-        buffer[SEQNO] = seqNo;
-        buffer[TYPE] = DATA;
-        memcpy(buffer+ACKSIZE, buf, size);
-        checksum->calcChecksum(buffer,size+ACKSIZE);
-
-        //old_seqNo = seqNo;
-        errorCount = 0;
         bool ack;
-        char temp = buffer[4];
-
         do{
-            std::cout << "Transport: Error count = " << errorCount << std::endl;
+            // Add transport header
+            buffer[SEQNO] = seqNo;
+            buffer[TYPE] = DATA;
+            memcpy(buffer+ACKSIZE, buf, size);
+            checksum->calcChecksum(buffer,size+ACKSIZE);
 
             ///Transport Test - corrupt message
             /*if (rand() % 2){
@@ -122,11 +115,8 @@ namespace Transport
             ack = receiveAck();
             std::cout << "Transport: " << (ack ? "Good" : "Bad") << " ack received" << std::endl;
 
-        }while(++errorCount < 5 && ack != true);
+        }while(ack != true);
 
-        if (errorCount == 5 && !ack){
-            std::cout << "Transport: Error count = 5 -> send request aborted" << std::endl;
-        }
 	}
 
 	/// <summary>
@@ -143,21 +133,18 @@ namespace Transport
 
             // Check if there's an error in the received message
             if (buffer[TYPE] != DATA || checksum->checkChecksum(buffer, recvSize) == false){
-                std::cout << "Transport: Error in received message" << std::endl
-                          << "Transport: Sending ACK" << (int)buffer[SEQNO]+1%2 << std::endl;
+
                 sendAck(false);
             }
             else{
                 // Check if the message is a retransmission
                 if (buffer[SEQNO] == old_seqNo){
-                    std::cout << "Transport: Retrasmission received - ignoring the message" << std::endl
-                              << "Transport: Sending ACK" << (int)buffer[SEQNO] << std::endl;
+
                     sendAck(true);
                 }
                 // The message is a new non-corrupt message
                 else{
-                    std::cout << "Transport: Good message received" << std::endl
-                              << "Transport: Sending ACK" << (int)buffer[SEQNO] << std::endl;
+
                     sendAck(true);
                     break;
                 }

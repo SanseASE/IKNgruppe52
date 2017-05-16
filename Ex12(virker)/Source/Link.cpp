@@ -27,31 +27,6 @@ Link::Link(int bufsize) : bufsize_(bufsize)
         exit(1);
     }
 
-    // Uncomment following lines to use timeout
-/*    rc=v24SetTimeouts(serialPort,5);
-    if ( rc!=V24_E_OK )
-    {
-        fputs("error: setup of the port timeout failed!\n",stderr);
-        v24ClosePort(serialPort);
-        exit(1);
-    }
-
-    rc=v24FlushRxQueue(serialPort);
-    if ( rc!= V24_E_OK )
-    {
-    	fputs("error: flushing receiverqueue\n", stderr);
-    	v24ClosePort(serialPort);
-    	exit(1);
-    }
-
-    rc=v24FlushTxQueue(serialPort);
-    if ( rc!= V24_E_OK )
-    {
-    	fputs("error: flushing transmitterqueue\n", stderr);
-    	v24ClosePort(serialPort);
-    	exit(1);
-    }
-*/
 }
 
 /**
@@ -75,39 +50,32 @@ Link::~Link()
  */
 void Link::send(const char buf[], short size)
 {
-    if(size > bufsize_){
-        std::cout << "Link: ERROR Message to big" << std::endl;
-        return;
-    }
 
     // Insert Delimiter
-    int k = 1;
-    buffer[0] = DELIMITER;
+    int count = 1;
+    buffer[0] = 'A';
 
     // Run through the parameter buf;
     // if an A is found insert BC in the local buffer,
     // if a B is found insert BD in the local buffer, else pass the char unchanged
     for (int i = 0; i < size; ++i){
         if(buf[i] == 'A'){
-            buffer[k++] = 'B';
-            buffer[k++] = 'C';
+            buffer[count++] = 'B';
+            buffer[count++] = 'C';
         }
         else if(buf[i] == 'B'){
-            buffer[k++] = 'B';
-            buffer[k++] = 'D';
+            buffer[count++] = 'B';
+            buffer[count++] = 'D';
         }
         else
-            buffer[k++] = buf[i];
+            buffer[count++] = buf[i];
     }
     // Append Delimiter
-    buffer[k++] = DELIMITER;
+    buffer[count++] = 'A';
 
     // Write the local buffer to the serialPort
-    int rc=v24Write(serialPort, (unsigned char*)buffer, k);
-    if ( rc < 0 || rc != k )
-    {
-        fputs("Link: ERROR v24Write failed.\n",stderr);
-    }
+    v24Write(serialPort, (unsigned char*)buffer, count);
+
 
     /// Link Test - remove print
     ///std::cout << "Link: buffer written to serial port: " << buffer << std::endl;
@@ -125,45 +93,40 @@ void Link::send(const char buf[], short size)
 short Link::receive(char buf[], short size)
 {
 	//variable to determine real end
-    short j = 0, i = 0;
+    short count = 0, i = 0;
 
-    if(bufsize_ < size){
-        std::cout << "Link: ERROR size to big" << std::endl;
-        return -1;
-    }
 	
 	//Wait for an 'A'
-    while(v24Getc(serialPort) != DELIMITER){}
+    while(v24Getc(serialPort) != 'A'){}
 
 
     while(1){
         // Read next char
-        buffer[j] = v24Getc(serialPort);
+        buffer[count] = v24Getc(serialPort);
 
         // Check for Delimiter
-        if(buffer[j] == DELIMITER){
-            /// Link Test - remove print
-            ///std::cout << "Link: Message without decoding: A" << buffer << std::endl;
+        if(buffer[count] == 'A'){
+
             return i;
         }
 
         // Check for the char combination BC (A) and BD (B);
         // If found make change in the parameter buf[]
         // If not found pass the char to the parameter buf[]
-        if(j > 0 && buffer[j-1] == 'B'){
-            if(buffer[j] == 'C')
+        if(count > 0 && buffer[count-1] == 'B'){
+            if(buffer[count] == 'C')
                 buf[i-1] = 'A';
-            else if(buffer[j] == 'D'){}
+            else if(buffer[count] == 'D'){}
             else{
                 std::cout << "Link: transmission error!" << std::endl;
                 return -1;
             }
         }
         else{
-            buf[i++] = buffer[j];
+            buf[i++] = buffer[count];
         }
 
-    ++j;
+    ++count;
     }
 }
 
