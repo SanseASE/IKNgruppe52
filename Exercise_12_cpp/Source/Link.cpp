@@ -77,9 +77,13 @@ Link::~Link()
 void Link::send(const char buf[], short size)
 {
     bzero(buffer, strlen(buffer));
+    if(size > bufsize_){
+        std::cout << "Link: ERROR Message to big" << std::endl;
+        return;
+    }
 
         int count = 1;
-        buffer[0] = 'A';
+        buffer[0] = DELIMITER;
         for (int i =  0; i < size; i++){
 
             if (buf[i] == 'A'){
@@ -96,10 +100,12 @@ void Link::send(const char buf[], short size)
 
         }
 
-        buffer[count++]='A';
+        buffer[count++] = DELIMITER;
 
-        v24Write(serialPort, (unsigned char*)buffer, count);
-        std::cout << "Besked sendt: " << buffer << std::endl;
+        int rc=v24Write(serialPort, (unsigned char*)buffer, count);
+        if ( rc < 0 || rc != count ){
+            fputs("Link: ERROR v24Write failed.\n",stderr);
+        }
 }
 
 /**
@@ -114,6 +120,11 @@ void Link::send(const char buf[], short size)
 short Link::receive(char buf[], short size)
 {
     short i = 0, count = 0;
+
+    if(bufsize_ < size){
+        std::cout << "Link: ERROR size to big" << std::endl;
+        return -1;
+    }
 
     //Wait for an 'A'
     while(v24Getc(serialPort) != 'A'){}

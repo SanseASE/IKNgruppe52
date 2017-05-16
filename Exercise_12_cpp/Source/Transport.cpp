@@ -144,16 +144,24 @@ namespace Transport
 
             check = checksum->checkChecksum(buffer, recvSize);
             if(buffer[TYPE] != DATA || check == false){
+                std::cout << "Transport: Error in received message" << std::endl
+                          << "Transport: Sending ACK" << (int)buffer[SEQNO]+1%2 << std::endl;
                 sendAck(false);
             }
-
-            else if(buffer[SEQNO] == old_seqNo){
-                sendAck(true);
-            }
-
             else{
-                sendAck(true);
-                break;
+                // Check if the message is a retransmission
+                if (buffer[SEQNO] == old_seqNo){
+                    std::cout << "Transport: Retrasmission received - ignoring the message" << std::endl
+                              << "Transport: Sending ACK" << (int)buffer[SEQNO] << std::endl;
+                    sendAck(true);
+                }
+                // The message is a new non-corrupt message
+                else{
+                    std::cout << "Transport: Good message received" << std::endl
+                              << "Transport: Sending ACK" << (int)buffer[SEQNO] << std::endl;
+                    sendAck(true);
+                    break;
+                }
             }
         }
 
