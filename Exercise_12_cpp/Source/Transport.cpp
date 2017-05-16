@@ -95,6 +95,7 @@ namespace Transport
     void Transport::send(const char buf[], short size)
     {
         bool ack;
+        errorCount = 0;
     do{
 
         buffer[SEQNO] = seqNo;
@@ -118,7 +119,11 @@ namespace Transport
         ack = receiveAck();
         std::cout << "Transport: " << (ack ? "Good" : "Bad") << " ack received" << std::endl;
 
-        } while(ack == false);
+        } while(++errorCount < 5 && ack == false);
+
+        if (errorCount == 5 && !ack){
+                    std::cout << "Transport: Error count = 5 -> send request aborted" << std::endl;
+                }
 
         old_seqNo = DEFAULT_SEQNO;
 
@@ -138,19 +143,21 @@ namespace Transport
             recvSize = link->receive(buffer,size+ACKSIZE);
 
             check = checksum->checkChecksum(buffer, recvSize);
-            if(buffer[TYPE] != DATA || check == false)
+            if(buffer[TYPE] != DATA || check == false){
                 sendAck(false);
+            }
 
-
-            else if(buffer[SEQNO] == old_seqNo)
+            else if(buffer[SEQNO] == old_seqNo){
                 sendAck(true);
+            }
 
-            else
+            else{
                 sendAck(true);
+                break;
+            }
         }
 
          old_seqNo = buffer[SEQNO];
-
          memcpy(buf, buffer+ACKSIZE, size);
 
          return recvSize-ACKSIZE;

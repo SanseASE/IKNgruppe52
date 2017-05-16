@@ -80,22 +80,18 @@ void Link::send(const char buf[], short size)
 
         int count = 1;
         buffer[0] = 'A';
-        for (int i =  0; i < size; i++)
-        {
+        for (int i =  0; i < size; i++){
 
-            if (buf[i] == 'A')
-            {
+            if (buf[i] == 'A'){
                 buffer[count++] = 'B';
                 buffer[count++] = 'C';
             }
-            else if (buf[i] == 'B')
-            {
+            else if (buf[i] == 'B'){
                 buffer[count++] = 'B';
                 buffer[count++] = 'D';
             }
-            else
-            {
-                buffer[count] = buf[i];
+            else{
+                buffer[count++] = buf[i];
             }
 
         }
@@ -117,32 +113,36 @@ void Link::send(const char buf[], short size)
  */
 short Link::receive(char buf[], short size)
 {
-    int i = 0;
-    int count = 0;
+    short i = 0, count = 0;
 
+    //Wait for an 'A'
     while(v24Getc(serialPort) != 'A'){}
 
     while(1){
+        // Read next char
+        buffer[count] = v24Getc(serialPort);
 
-    buffer[count] = v24Getc(serialPort);
+        // Check for Delimiter
+        if(buffer[count] == 'A'){
 
-    if(buffer[count] == 'A'){
+            return i;}
 
-        return i;}
+        if(count > 0 && buffer[count-1] == 'B'){
+            if(buffer[count] == 'C'){
+                buf[i-1] = 'A';
+            }
 
-    if(count > 0 && buffer[count-1] == 'B'){
-        if(buffer[count] == 'C')
-            buf[i-1] = 'A';
+            else if(buffer[count] == 'D'){}
+            else{
+                std::cout << "Link: transmission error!" << std::endl;
+                return -1;
+            }
+         }
 
-        else if(buffer[count] == 'D'){}
+
         else{
-            std::cout << "Link: transmission error!" << std::endl;
-            return -1;
+            buf[i++] = buffer[count];
         }
-    }
-    else{
-        buf[i++] = buffer[count];
-    }
 
     ++count;
     }
